@@ -13,7 +13,8 @@ namespace IndiePal.Models
         [Required]
         public bool Active { get; set; }
         [Required]
-        public int ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
+        [Required]
         public ApplicationUser ApplicationUser { get; set; }
         [Required]
         public string Biography { get; set; }

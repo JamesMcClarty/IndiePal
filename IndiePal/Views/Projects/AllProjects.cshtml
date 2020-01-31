@@ -1,0 +1,35 @@
+﻿@model IndiePal.Models.ViewModels.ProjectListAndDirectorViewModel
+@{
+    ViewData["Title"] = "AllProjects";
+}
+
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Projects
+                </h1>
+                <h2 class="subtitle">
+                    Browse other's projects, or create your own!
+                </h2>
+            </div>
+        </div>
+    </section>
+
+<a asp-action="DirectorAgreement">Create New Director</a>
+
+<article class="media">
+    <div class="flex-lg-wrap">
+    <figure class="media-left">
+        <p>All Projects</p>
+    </figure>
+    <figure class="media-left">
+        <p>Your Projects</p>
+    </figure>
+    </div>
+    <div class="media-content">
+        <div class="content">
+            
+        </div>
+    </div>
+</article>

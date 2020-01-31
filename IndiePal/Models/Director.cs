@@ -11,10 +11,9 @@ namespace IndiePal.Models
         [Required]
         public int Id { get; set; }
         [Required]
-        public int ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
+        [Required]
         public ApplicationUser ApplicationUser { get; set; }
-
         public virtual ICollection<Project> Projects { get; set; }
-
     }
 }

@@ -1,0 +1,36 @@
+﻿@model IndiePal.Models.ViewModels.UserHasDirectorViewModel
+@{
+    ViewData["Title"] = "DirectorAgreement";
+}
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Director Agreement
+            </h1>
+            <h2 class="subtitle">
+                Can you handle the responsibility?
+            </h2>
+        </div>
+    </div>
+</section>
+
+@if (!Model.hasDirectorAccout)
+{
+    <div class="content">
+        <h1>Before you register as a Director, you must agree to the following:</h1>
+        <ul>
+            <li>Make sure that your project name, description, and logs are safe for work and inoffensive.</li>
+            <li>Treat your Talents with respect and don't abuse their position.</li>
+            <li>Be honest with your budget and the intentions of your project.</li>
+            <li>Have fun.</li>
+        </ul>
+
+        <form asp-action="CreateDirector">
+            <input type="hidden" asp-for="User.Id">
+            <input class="button" type="submit" value="Submit">
+        </form>
+    </div>
+
+}

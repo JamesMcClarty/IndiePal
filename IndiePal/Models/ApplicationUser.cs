@@ -16,9 +16,5 @@ namespace IndiePal.Models
         [Required]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
-
-        [Required]
-        [Display(Name = "User Name")]
-        public string Username { get; set; }
     }
 }
