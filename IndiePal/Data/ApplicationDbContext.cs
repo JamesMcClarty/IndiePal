@@ -12,6 +12,14 @@ namespace IndiePal.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<Director> Director { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<ProjectLog> ProjectLog { get; set; }
+        public DbSet<ProjectPosition> ProjectPosition { get; set; }
+        public DbSet<Skill> Skill { get; set; }
+        public DbSet<Talent> Talent { get; set; }
+        public DbSet<TalentSkill> TalentSkill { get; set; }
+
     }
 }
