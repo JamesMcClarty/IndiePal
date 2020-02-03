@@ -1,0 +1,49 @@
+﻿@model IndiePal.Models.ViewModels.NewTalentAndSkills
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Creating a New Talent
+            </h1>
+            <h2 class="subtitle">
+                A star is born!
+            </h2>
+        </div>
+    </div>
+</section>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Create a new Biography!</label>
+                <textarea asp-for="Biography" class="form-control" rows="5" cols="80"></textarea>
+                <span asp-validation-for="Biography" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>What's your prefered wage?</label>
+                <input asp-for="Wage" class="form-control" />
+                <span asp-validation-for="Wage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>What are your skills?</label>
+                <p>Please seperate skills with a comma.</p>
+                <input asp-for="Skills" class="form-control" />
+                <span asp-validation-for="Skills" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="AllTalents">Back to List</a>
+</div>

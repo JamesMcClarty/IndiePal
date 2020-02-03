@@ -65,13 +65,14 @@ namespace IndiePal.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDirector([Bind("User.Id")] UserHasDirectorViewModel model)
+        public async Task<IActionResult> CreateDirector(string id)
         {
             if (ModelState.IsValid)
             {
-                var newDirector = new Director()
+                Director newDirector = new Director()
                 {
-                    ApplicationUserId = model.User.Id
+                    Id = 0,
+                    ApplicationUserId = id
                 };
 
                 _context.Add(newDirector);

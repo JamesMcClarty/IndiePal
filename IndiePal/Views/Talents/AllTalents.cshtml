@@ -1,0 +1,25 @@
+﻿@model IndiePal.Models.ViewModels.TalentListAndTalentViewModel
+@{
+    ViewData["Title"] = "AllTalents";
+}
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Talents
+            </h1>
+            <h2 class="subtitle">
+                Take your pick of the talented!
+            </h2>
+        </div>
+    </div>
+</section>
+
+@if (Model.Talent == null)
+{
+    <a asp-action="CreatingTalent">Create New Talent</a>
+}
+
+<article class="media">
+</article>

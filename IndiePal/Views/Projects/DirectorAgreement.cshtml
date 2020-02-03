@@ -27,10 +27,18 @@
             <li>Have fun.</li>
         </ul>
 
-        <form asp-action="CreateDirector">
-            <input type="hidden" asp-for="User.Id">
+        <form asp-action="CreateDirector" asp-route-id="@Model.User.Id">
             <input class="button" type="submit" value="Submit">
         </form>
     </div>
 
+}
+
+else
+{
+    <div class="content">
+        <h1>Sorry. You are already a director.</h1>
+
+        <a asp-action="AllProjects">Return to Projects</a>
+    </div>
 }

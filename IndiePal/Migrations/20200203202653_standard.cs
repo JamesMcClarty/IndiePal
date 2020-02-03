@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IndiePal.Migrations
 {
-    public partial class Startin : Migration
+    public partial class standard : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,19 +46,6 @@ namespace IndiePal.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Skill",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Skill", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,17 +227,11 @@ namespace IndiePal.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TalentID = table.Column<int>(nullable: false),
-                    SkillId = table.Column<int>(nullable: false)
+                    Skill = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TalentSkill", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TalentSkill_Skill_SkillId",
-                        column: x => x.SkillId,
-                        principalTable: "Skill",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TalentSkill_Talent_TalentID",
                         column: x => x.TalentID,
@@ -306,6 +287,11 @@ namespace IndiePal.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "00000000-ffff-ffff-ffff-ffffffffffff", 0, "1652d670-ee58-4f2e-ae87-4d4a536dd611", "admin@admin.com", true, "admin", "admin", false, null, "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAEAACcQAAAAEKzJTwoQXJpQmqpE+ZSwiNIPJG8gK2uqM9XGjIl/hqD264xgTFzTZYFow3u2w5Ia4w==", null, false, "7f434309-a4d9-48e9-9ebb-8803db794577", false, "adminguy" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -377,11 +363,6 @@ namespace IndiePal.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TalentSkill_SkillId",
-                table: "TalentSkill",
-                column: "SkillId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TalentSkill_TalentID",
                 table: "TalentSkill",
                 column: "TalentID");
@@ -418,9 +399,6 @@ namespace IndiePal.Migrations
 
             migrationBuilder.DropTable(
                 name: "Project");
-
-            migrationBuilder.DropTable(
-                name: "Skill");
 
             migrationBuilder.DropTable(
                 name: "Talent");

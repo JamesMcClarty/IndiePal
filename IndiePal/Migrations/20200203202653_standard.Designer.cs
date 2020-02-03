@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IndiePal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200131174228_James")]
-    partial class James
+    [Migration("20200203202653_standard")]
+    partial class standard
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -98,7 +98,7 @@ namespace IndiePal.Migrations
                         {
                             Id = "00000000-ffff-ffff-ffff-ffffffffffff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2b5f2190-6f8e-4265-80a0-cfbb47be4a86",
+                            ConcurrencyStamp = "1652d670-ee58-4f2e-ae87-4d4a536dd611",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -106,7 +106,7 @@ namespace IndiePal.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDx9974kLLO9MRPUbO+BVTn2QevWKJn1Dvl+2ve0Y7BH5zO97ZY9f0Ik2m+cMdygZg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKzJTwoQXJpQmqpE+ZSwiNIPJG8gK2uqM9XGjIl/hqD264xgTFzTZYFow3u2w5Ia4w==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "7f434309-a4d9-48e9-9ebb-8803db794577",
                             TwoFactorEnabled = false,
@@ -218,22 +218,6 @@ namespace IndiePal.Migrations
                     b.ToTable("ProjectPosition");
                 });
 
-            modelBuilder.Entity("IndiePal.Models.Skill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Skill");
-                });
-
             modelBuilder.Entity("IndiePal.Models.Talent", b =>
                 {
                     b.Property<int>("Id")
@@ -269,15 +253,14 @@ namespace IndiePal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("SkillId")
-                        .HasColumnType("int");
+                    b.Property<string>("Skill")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TalentID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SkillId");
 
                     b.HasIndex("TalentID");
 
@@ -470,12 +453,6 @@ namespace IndiePal.Migrations
 
             modelBuilder.Entity("IndiePal.Models.TalentSkill", b =>
                 {
-                    b.HasOne("IndiePal.Models.Skill", "Skill")
-                        .WithMany()
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("IndiePal.Models.Talent", "Talent")
                         .WithMany()
                         .HasForeignKey("TalentID")
