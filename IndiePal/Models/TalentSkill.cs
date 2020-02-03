@@ -17,8 +17,6 @@ namespace IndiePal.Models
         public Talent Talent { get; set; }
 
         [Required]
-        public int SkillId { get; set; }
-
-        public Skill Skill { get; set; }
+        public String Skill { get; set; }
     }
 }
