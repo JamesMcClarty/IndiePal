@@ -21,5 +21,53 @@
     <a asp-action="CreatingTalent">Create New Talent</a>
 }
 
-<article class="media">
-</article>
+else
+{
+    <div class="box ">
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+                    <p>
+                        <strong>@Model.Talent.ApplicationUser.UserName</strong>
+                    </p>
+                    <br>
+
+                    <p>
+                    <strong>Skills at a glance:</strong>
+                    <p>
+
+                        <ul>
+                            @if (Model.Talent.Skills.Count > 3)
+                            {
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    <li>@Model.Talent.Skills[i].Skill</li>
+                                }
+                            }
+                            else
+                            {
+                                foreach (TalentSkill skill in Model.Talent.Skills)
+                                {
+                                    <li>@skill.Skill</li>
+                                }
+                            }
+                        </ul>
+                        <nav class="level is-mobile">
+                            <div class="level-left">
+                                <a asp-action="Details" asp-route-id="@Model.Talent.Id">Details</a> | 
+                                <a asp-action="Edit" asp-route-id="@Model.Talent.Id">Edit</a> | 
+                                @if (Model.Talent.Active == true)
+                                {
+                                    <a asp-action="Close" asp-route-id="@Model.Talent.Id">Close Talent</a>
+                                }
+                                else
+                                {
+                                    <a asp-action="Open" asp-route-id="@Model.Talent.Id">Reopen Talent</a>
+                                }
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </article>
+        </div>
+}

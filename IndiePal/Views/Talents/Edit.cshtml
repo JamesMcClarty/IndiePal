@@ -1,43 +1,62 @@
-﻿@model IndiePal.Models.Talent
+﻿@model IndiePal.Models.ViewModels.NewTalentAndSkills
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Talent</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Active" /> @Html.DisplayNameFor(model => model.Active)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="ApplicationUserId" class="control-label"></label>
-                <select asp-for="ApplicationUserId" class="form-control" asp-items="ViewBag.ApplicationUserId"></select>
-                <span asp-validation-for="ApplicationUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Biography" class="control-label"></label>
-                <input asp-for="Biography" class="form-control" />
-                <span asp-validation-for="Biography" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Wage" class="control-label"></label>
-                <input asp-for="Wage" class="form-control" />
-                <span asp-validation-for="Wage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Editing @Model.ApplicationUser.UserName's Talent Info
+            </h1>
+            <h2 class="subtitle">
+                Making adjustments to your repertoire.
+            </h2>
+        </div>
     </div>
+</section>
+
+<div class="box">
+    <article class="media">
+        <div class="media-content">
+            <div class="content">
+
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Active" />
+
+                    <div class="form-group">
+                        <label asp-for="Biography" class="control-label"></label>
+                        <div class="field">
+                            <div class="control">
+                                <textarea asp-for="Biography" class="textarea is-primary" placeholder="Primary textarea"></textarea>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Biography" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Wage" class="control-label"></label>
+                        <input asp-for="Wage" class="input is-rounded" type="text" placeholder="Rounded input">
+                        <span asp-validation-for="Wage" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>What are your skills?</label>
+                        <p>Please seperate skills with a comma.</p>
+                        <input asp-for="SkillString" class="form-control" />
+                        <span asp-validation-for="SkillString" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="is-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </article>
 </div>
 
 <div>

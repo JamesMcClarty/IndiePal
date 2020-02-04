@@ -31,6 +31,7 @@ namespace IndiePal.Controllers
 
             var talent = await _context.Talent
                 .Include(t => t.ApplicationUser)
+                .Include(t => t.Skills)
                 .FirstOrDefaultAsync(t => t.ApplicationUserId == user.Id);
 
             var TalentListAndTalent = new TalentListAndTalentViewModel()
@@ -52,7 +53,10 @@ namespace IndiePal.Controllers
 
             var talent = await _context.Talent
                 .Include(t => t.ApplicationUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(t => t.Skills)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id);
+
             if (talent == null)
             {
                 return NotFound();
@@ -62,7 +66,7 @@ namespace IndiePal.Controllers
         }
 
         // GET: Talents/Create
-        public async Task<IActionResult> CreatingTalent()
+        public IActionResult CreatingTalent()
         {
             return View();
         }
@@ -74,7 +78,6 @@ namespace IndiePal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Biography,Wage,Skills")] NewTalentAndSkills model)
         {
-
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");
             var user = await GetCurrentUserAsync();
@@ -93,11 +96,9 @@ namespace IndiePal.Controllers
                 _context.Add(talent);
                 await _context.SaveChangesAsync();
 
-                if (!string.IsNullOrWhiteSpace(model.Skills))
+                if (!string.IsNullOrWhiteSpace(model.SkillString))
                 {
-
-                    bool IsProceed = await AddSkills(model.Skills, user.Id);
-                    
+                    bool IsProceed = await AddSkills(model.SkillString, user.Id);
                 }
 
                 return RedirectToAction(nameof(AllTalents));
@@ -114,13 +115,41 @@ namespace IndiePal.Controllers
                 return NotFound();
             }
 
-            var talent = await _context.Talent.FindAsync(id);
+            var talent = await _context.Talent
+                .Include(t => t.ApplicationUser)
+                .Include(t => t.Skills)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            string skillString = "";
+
+            var editedTalent = new NewTalentAndSkills()
+            {
+                Id = talent.Id,
+                Active = talent.Active,
+                ApplicationUser = talent.ApplicationUser,
+                Wage = talent.Wage,
+                Biography = talent.Biography,
+            };
+
+            foreach (TalentSkill skill in talent.Skills)
+            {
+                skillString += skill.Skill;
+                if (skill == talent.Skills.Last())
+                {
+                    editedTalent.SkillString = skillString;
+                }
+                else
+                {
+                    skillString += ",";
+                }
+            }
+
             if (talent == null)
             {
                 return NotFound();
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", talent.ApplicationUserId);
-            return View(talent);
+
+            return View(editedTalent);
         }
 
         // POST: Talents/Edit/5
@@ -128,9 +157,13 @@ namespace IndiePal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Active,ApplicationUserId,Biography,Wage")] Talent talent)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Active,Biography,Wage,SkillString")] NewTalentAndSkills editedTalent)
         {
-            if (id != talent.Id)
+            ModelState.Remove("ApplicationUserId");
+            ModelState.Remove("ApplicationUser");
+            var user = await GetCurrentUserAsync();
+
+            if (id != editedTalent.Id)
             {
                 return NotFound();
             }
@@ -139,12 +172,33 @@ namespace IndiePal.Controllers
             {
                 try
                 {
+                    var skills = await _context.TalentSkill
+                        .Where(c => c.TalentID == editedTalent.Id)
+                        .ToListAsync();
+
+                    foreach (TalentSkill skill in skills)
+                    {
+                        _context.TalentSkill.Remove(skill);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    var skillsMade = await AddSkills(editedTalent.SkillString, user.Id);
+
+                    var talent = new Talent()
+                    {
+                        Id = id,
+                        ApplicationUserId = user.Id,
+                        Biography = editedTalent.Biography,
+                        Wage = editedTalent.Wage,
+                        Active = editedTalent.Active
+                    };
+
                     _context.Update(talent);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TalentExists(talent.Id))
+                    if (!TalentExists(editedTalent.Id))
                     {
                         return NotFound();
                     }
@@ -153,10 +207,9 @@ namespace IndiePal.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AllTalents));
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", talent.ApplicationUserId);
-            return View(talent);
+            return View(editedTalent);
         }
 
         // GET: Talents/Delete/5
@@ -204,8 +257,8 @@ namespace IndiePal.Controllers
 
             foreach (string trimmedSkill in skills)
             {
-
                 var obtainedTalent = await _context.Talent
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(o => o.ApplicationUserId == appId);
 
                 var talentSkill = new TalentSkill()
