@@ -54,6 +54,7 @@ namespace IndiePal.Controllers
             var talent = await _context.Talent
                 .Include(t => t.ApplicationUser)
                 .Include(t => t.Skills)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (talent == null)
@@ -95,9 +96,9 @@ namespace IndiePal.Controllers
                 _context.Add(talent);
                 await _context.SaveChangesAsync();
 
-                if (!string.IsNullOrWhiteSpace(model.Skills))
+                if (!string.IsNullOrWhiteSpace(model.SkillString))
                 {
-                    bool IsProceed = await AddSkills(model.Skills, user.Id);
+                    bool IsProceed = await AddSkills(model.SkillString, user.Id);
                 }
 
                 return RedirectToAction(nameof(AllTalents));
@@ -124,6 +125,7 @@ namespace IndiePal.Controllers
             var editedTalent = new NewTalentAndSkills()
             {
                 Id = talent.Id,
+                Active = talent.Active,
                 ApplicationUser = talent.ApplicationUser,
                 Wage = talent.Wage,
                 Biography = talent.Biography,
@@ -134,7 +136,7 @@ namespace IndiePal.Controllers
                 skillString += skill.Skill;
                 if (skill == talent.Skills.Last())
                 {
-                    editedTalent.Skills = skillString;
+                    editedTalent.SkillString = skillString;
                 }
                 else
                 {
@@ -155,7 +157,7 @@ namespace IndiePal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Active,Biography,Wage,Skills")] NewTalentAndSkills editedTalent)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Active,Biography,Wage,SkillString")] NewTalentAndSkills editedTalent)
         {
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");
@@ -180,7 +182,7 @@ namespace IndiePal.Controllers
                         await _context.SaveChangesAsync();
                     }
 
-                    var skillsMade = await AddSkills(editedTalent.Skills, user.Id);
+                    var skillsMade = await AddSkills(editedTalent.SkillString, user.Id);
 
                     var talent = new Talent()
                     {
@@ -256,6 +258,7 @@ namespace IndiePal.Controllers
             foreach (string trimmedSkill in skills)
             {
                 var obtainedTalent = await _context.Talent
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(o => o.ApplicationUserId == appId);
 
                 var talentSkill = new TalentSkill()

@@ -6,19 +6,9 @@ using System.Threading.Tasks;
 
 namespace IndiePal.Models.ViewModels
 {
-    public class NewTalentAndSkills
+    public class NewTalentAndSkills: Talent
     {
-        public int Id { get; set; }
-        [Required]
-        public bool Active { get; set; }
-        [Required]
-        public string ApplicationUserId { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
-        [Required]
-        public string Biography { get; set; }
-        [Required]
-        public decimal Wage { get; set; }
-        public string Skills { get; set; }
+        public string SkillString { get; set; }
 
     }
 }
