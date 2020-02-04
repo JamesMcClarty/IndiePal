@@ -33,7 +33,7 @@ else
                     <br>
 
                     <p>
-                    <strong>Skills at a glance:</strong>
+                        <strong>Skills at a glance:</strong>
                     <p>
 
                         <ul>
@@ -54,20 +54,96 @@ else
                         </ul>
                         <nav class="level is-mobile">
                             <div class="level-left">
-                                <a asp-action="Details" asp-route-id="@Model.Talent.Id">Details</a> | 
-                                <a asp-action="Edit" asp-route-id="@Model.Talent.Id">Edit</a> | 
+                                <a asp-action="Details" asp-route-id="@Model.Talent.Id">Details</a> |
+                                <a asp-action="Edit" asp-route-id="@Model.Talent.Id">Edit</a> |
                                 @if (Model.Talent.Active == true)
                                 {
-                                    <a asp-action="Close" asp-route-id="@Model.Talent.Id">Close Talent</a>
+
+                                    <button class="button is-primary" id="openCloseModal" data-target="#closemodal">Close Talent Account</button>
+
                                 }
                                 else
                                 {
-                                    <a asp-action="Open" asp-route-id="@Model.Talent.Id">Reopen Talent</a>
+                                    <button class ="button is-primary" id="openOpenModal" data-target="#openmodal">Open Talent Account</button>
                                 }
                             </div>
                         </nav>
-                    </div>
                 </div>
-            </article>
+            </div>
+        </article>
+    </div>
+
+    <div id="closemodal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong>Warning</strong>
+                                <br>
+                                Do you wish to close your talent account? You can reopen it to be listed later.
+                            </p>
+                        </div>
+                        <form asp-action="Close" asp-route-id="@Model.Talent.Id">
+                            <button class="button is-primary">Accept</button>
+                        </form>
+                        <button class="button is-warning" id="closeCloseModal">Close</button>
+
+                    </div>
+                </article>
+            </div>
         </div>
+    </div>
+
+    <div id="openmodal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong>Warning</strong>
+                                <br>
+                                Open your account? It will be put back on the list.
+                            </p>
+                        </div>
+                        <form asp-action="Reopen" asp-route-id="@Model.Talent.Id">
+                            <button class="button is-primary">Accept</button>
+                        </form>
+                        <button class="button is-warning" id="closeOpenModal">Close</button>
+
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        $("#openCloseModal").click(function () {
+            var target = $(this).data("target");
+            $("html").addClass("is-clipped");
+            $(target).addClass("is-active");
+        });
+
+        $("#closeCloseModal").click(function () {
+            $("html").removeClass("is-clipped");
+            $("#closemodal").removeClass("is-active");
+        });
+
+         $("#openOpenModal").click(function () {
+            var target = $(this).data("target");
+            $("html").addClass("is-clipped");
+            $(target).addClass("is-active");
+        });
+
+        $("#closeOpenModal").click(function () {
+            $("html").removeClass("is-clipped");
+            $("#closemodal").removeClass("is-active");
+        });
+    </script>
+
 }
