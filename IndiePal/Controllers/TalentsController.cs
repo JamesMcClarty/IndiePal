@@ -212,34 +212,28 @@ namespace IndiePal.Controllers
             return View(editedTalent);
         }
 
-        // GET: Talents/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var talent = await _context.Talent
-                .Include(t => t.ApplicationUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (talent == null)
-            {
-                return NotFound();
-            }
-
-            return View(talent);
-        }
-
-        // POST: Talents/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: Talents/Close/5
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Close(int id)
         {
             var talent = await _context.Talent.FindAsync(id);
-            _context.Talent.Remove(talent);
+            talent.Active = false;
+            _context.Talent.Update(talent);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllTalents));
+        }
+        // POST: Talents/Reopen/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reopen(int id)
+        {
+            var talent = await _context.Talent.FindAsync(id);
+            talent.Active = true;
+            _context.Talent.Update(talent);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(AllTalents));
         }
 
         private bool TalentExists(int id)
