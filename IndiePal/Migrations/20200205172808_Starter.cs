@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IndiePal.Migrations
 {
-    public partial class standard : Migration
+    public partial class Starter : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -201,13 +201,13 @@ namespace IndiePal.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: false),
                     Active = table.Column<bool>(nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
-                    EndDate = table.Column<DateTime>(nullable: false),
+                    EndDate = table.Column<DateTime>(nullable: true),
                     Budget = table.Column<decimal>(nullable: false),
                     Description = table.Column<string>(nullable: false),
-                    DirectorId = table.Column<int>(nullable: true)
+                    DirectorId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -217,7 +217,7 @@ namespace IndiePal.Migrations
                         column: x => x.DirectorId,
                         principalTable: "Director",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -269,7 +269,7 @@ namespace IndiePal.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectId = table.Column<int>(nullable: false),
                     Postion = table.Column<string>(nullable: false),
-                    TalentId = table.Column<int>(nullable: false)
+                    TalentId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,19 +279,19 @@ namespace IndiePal.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_ProjectPosition_Talent_TalentId",
                         column: x => x.TalentId,
                         principalTable: "Talent",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "00000000-ffff-ffff-ffff-ffffffffffff", 0, "1652d670-ee58-4f2e-ae87-4d4a536dd611", "admin@admin.com", true, "admin", "admin", false, null, "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAEAACcQAAAAEKzJTwoQXJpQmqpE+ZSwiNIPJG8gK2uqM9XGjIl/hqD264xgTFzTZYFow3u2w5Ia4w==", null, false, "7f434309-a4d9-48e9-9ebb-8803db794577", false, "adminguy" });
+                values: new object[] { "00000000-ffff-ffff-ffff-ffffffffffff", 0, "f7d4a8d9-aacf-45da-b32f-da17f493b460", "admin@admin.com", true, "admin", "admin", false, null, "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAEAACcQAAAAEBDPC/H1RtMLIKWesoBI9w7UdcrUMzW17xG1geJgI6M4+ppmlHV0DJ6wx/J7KOswPQ==", null, false, "7f434309-a4d9-48e9-9ebb-8803db794577", false, "adminguy" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

@@ -18,7 +18,12 @@
 
 @if (Model.Director == null)
 {
-<a asp-action="DirectorAgreement">Create New Director</a>
+<a asp-action="DirectorAgreement">Create New Director Account</a>
+}
+
+else if (Model.AllProjects.Count < 2)
+{
+<a asp-action="CreateProject">Create a new project!</a>
 }
 
 <article class="media">

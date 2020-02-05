@@ -1,16 +1,19 @@
 ﻿using IndiePal.Data;
 using IndiePal.Models;
 using IndiePal.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IndiePal.Controllers
 {
+    [Authorize]
     public class TalentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -76,7 +79,7 @@ namespace IndiePal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Biography,Wage,Skills")] NewTalentAndSkills model)
+        public async Task<IActionResult> Create([Bind("Id,Biography,Wage,SkillList")] NewTalentAndSkills model)
         {
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");
@@ -96,10 +99,7 @@ namespace IndiePal.Controllers
                 _context.Add(talent);
                 await _context.SaveChangesAsync();
 
-                if (!string.IsNullOrWhiteSpace(model.SkillString))
-                {
-                    bool IsProceed = await AddSkills(model.SkillString, user.Id);
-                }
+                bool skillsProcessed = await AddSkills(model.SkillList, user.Id);
 
                 return RedirectToAction(nameof(AllTalents));
             }
@@ -120,8 +120,6 @@ namespace IndiePal.Controllers
                 .Include(t => t.Skills)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
-            string skillString = "";
-
             var editedTalent = new NewTalentAndSkills()
             {
                 Id = talent.Id,
@@ -129,19 +127,12 @@ namespace IndiePal.Controllers
                 ApplicationUser = talent.ApplicationUser,
                 Wage = talent.Wage,
                 Biography = talent.Biography,
+                SkillList = new List<string>()
             };
 
             foreach (TalentSkill skill in talent.Skills)
             {
-                skillString += skill.Skill;
-                if (skill == talent.Skills.Last())
-                {
-                    editedTalent.SkillString = skillString;
-                }
-                else
-                {
-                    skillString += ",";
-                }
+                editedTalent.SkillList.Add(skill.Skill);
             }
 
             if (talent == null)
@@ -157,7 +148,7 @@ namespace IndiePal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Active,Biography,Wage,SkillString")] NewTalentAndSkills editedTalent)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Active,Biography,Wage,SkillList")] NewTalentAndSkills editedTalent)
         {
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");
@@ -182,7 +173,7 @@ namespace IndiePal.Controllers
                         await _context.SaveChangesAsync();
                     }
 
-                    var skillsMade = await AddSkills(editedTalent.SkillString, user.Id);
+                    var skillsMade = await AddSkills(editedTalent.SkillList, user.Id);
 
                     var talent = new Talent()
                     {
@@ -245,25 +236,26 @@ namespace IndiePal.Controllers
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        private async Task<Boolean> AddSkills(string skillString, string appId)
+        private async Task<Boolean> AddSkills(List<string> skills, string appId)
         {
-            string[] skills = skillString.Split(',');
-
-            foreach (string trimmedSkill in skills)
+            if (skills.Count != 0)
             {
-                var obtainedTalent = await _context.Talent
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(o => o.ApplicationUserId == appId);
-
-                var talentSkill = new TalentSkill()
+                foreach (string trimmedSkill in skills)
                 {
-                    Id = 0,
-                    Skill = trimmedSkill,
-                    TalentID = obtainedTalent.Id
-                };
+                    var obtainedTalent = await _context.Talent
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(o => o.ApplicationUserId == appId);
 
-                _context.Add(talentSkill);
-                await _context.SaveChangesAsync();
+                    var talentSkill = new TalentSkill()
+                    {
+                        Id = 0,
+                        Skill = trimmedSkill,
+                        TalentID = obtainedTalent.Id
+                    };
+
+                    _context.Add(talentSkill);
+                    await _context.SaveChangesAsync();
+                }
             }
             return true;
         }

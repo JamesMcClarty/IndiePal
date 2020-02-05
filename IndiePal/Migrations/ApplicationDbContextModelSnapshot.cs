@@ -96,7 +96,7 @@ namespace IndiePal.Migrations
                         {
                             Id = "00000000-ffff-ffff-ffff-ffffffffffff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1652d670-ee58-4f2e-ae87-4d4a536dd611",
+                            ConcurrencyStamp = "f7d4a8d9-aacf-45da-b32f-da17f493b460",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -104,7 +104,7 @@ namespace IndiePal.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKzJTwoQXJpQmqpE+ZSwiNIPJG8gK2uqM9XGjIl/hqD264xgTFzTZYFow3u2w5Ia4w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBDPC/H1RtMLIKWesoBI9w7UdcrUMzW17xG1geJgI6M4+ppmlHV0DJ6wx/J7KOswPQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "7f434309-a4d9-48e9-9ebb-8803db794577",
                             TwoFactorEnabled = false,
@@ -147,7 +147,7 @@ namespace IndiePal.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DirectorId")
+                    b.Property<int>("DirectorId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
@@ -156,8 +156,9 @@ namespace IndiePal.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Title")
-                        .HasColumnType("int");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -413,7 +414,9 @@ namespace IndiePal.Migrations
                 {
                     b.HasOne("IndiePal.Models.Director", null)
                         .WithMany("Projects")
-                        .HasForeignKey("DirectorId");
+                        .HasForeignKey("DirectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("IndiePal.Models.ProjectLog", b =>
@@ -452,7 +455,7 @@ namespace IndiePal.Migrations
             modelBuilder.Entity("IndiePal.Models.TalentSkill", b =>
                 {
                     b.HasOne("IndiePal.Models.Talent", "Talent")
-                        .WithMany()
+                        .WithMany("Skills")
                         .HasForeignKey("TalentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

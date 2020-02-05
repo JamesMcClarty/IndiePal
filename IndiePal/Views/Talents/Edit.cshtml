@@ -43,13 +43,18 @@
                         <span asp-validation-for="Wage" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group">
-                        <label>What are your skills?</label>
-                        <p>Please seperate skills with a comma.</p>
-                        <input asp-for="SkillString" class="form-control" />
-                        <span asp-validation-for="SkillString" class="text-danger"></span>
+                    <label>What skills do you have?</label>
+                    <button class="button is-link" id="CreateForm">Add Skill</button>
+                    <div id="skilllist">
+                        @for (int i = 0; i < Model.SkillList.Count; i++)
+                        {
+                        <div class="form-group">
+                            <input asp-for="SkillList[i]" class="form-control" />
+                            <a href="#" class="remove_field">Remove</a>
+                            <span asp-validation-for="SkillList[i]" class="text-danger"></span>
+                        </div>
+                        }
                     </div>
-
                     <div class="form-group">
                         <input type="submit" value="Save" class="is-primary" />
                     </div>
@@ -63,3 +68,24 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+	var max_fields      = 9; //maximum input boxes allowed
+	var wrapper   		= $("#skilllist"); //Fields wrapper
+	var add_button      = $("#CreateForm"); //Add button ID
+
+	var x = @Model.SkillList.Count; //initlal text box count
+	$(add_button).click(function(e){ //on add input button click
+		e.preventDefault();
+		if(x < max_fields){ //max input box allowed
+            $(wrapper).append('<div class="form-group" ><input class="form-control" type="text" id="SkillList_' + x + '_" name="SkillList[' + x + ']" value=""><a href="#" class="remove_field">Remove</a><span class="text-danger field-validation-valid" data-valmsg-for="SkillList[' + x + ']" data-valmsg-replace="true"></span></div>'); //add input box
+            	x++; //text box increment
+		}
+	});
+
+	$(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+		e.preventDefault(); $(this).parent('div').remove(); x--;
+	})
+});
+</script>
