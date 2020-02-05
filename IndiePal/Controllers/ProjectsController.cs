@@ -26,7 +26,7 @@ namespace IndiePal.Controllers
 
         // GET: Projects
         [HttpGet]
-        public async Task<ActionResult> AllProjects()
+        public async Task<ActionResult> AllProjects(int index, bool viewingyours)
         {
             var user = await GetCurrentUserAsync();
 
@@ -39,9 +39,20 @@ namespace IndiePal.Controllers
 
             var projectAndDirector = new ProjectListAndDirectorViewModel()
             {
-                AllProjects = projectsList,
                 Director = director
             };
+
+            if (viewingyours == false)
+            {
+                projectAndDirector.AllProjects = projectsList.Skip((index - 1) * 5).Take(5).ToList();
+            }
+            else
+            {
+                projectAndDirector.AllProjects = director.Projects.Skip((index - 1) * 5).Take(5).ToList();
+            }
+
+            ViewBag.index = index;
+            ViewBag.viewingyours = viewingyours; 
 
             return View(projectAndDirector);
         }
