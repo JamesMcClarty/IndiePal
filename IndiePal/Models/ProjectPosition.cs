@@ -16,7 +16,7 @@ namespace IndiePal.Models
 
         [Required]
         public string Postion { get; set; }
-        public int TalentId { get; set; }
+        public int? TalentId { get; set; }
         public Talent Talent { get; set; }
     }
 }

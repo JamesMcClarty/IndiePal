@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IndiePal.Models.ViewModels
 {
-    public class NewTalentAndSkills: Talent
+    public class NewProjectAndPositions: Project
     {
-        public List<string> SkillList { get; set; }
-
+        public List<string> Positions { get; set; }
     }
 }

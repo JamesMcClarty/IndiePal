@@ -12,16 +12,18 @@ namespace IndiePal.Models
         [Required]
         public int Id { get; set; }
         [Required]
-        public int Title { get; set; }
+        public string Title { get; set; }
         [Required]
         public bool Active { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         [Required]
         public decimal Budget { get; set; }
         [Required]
         public string Description { get; set; }
+        [Required]
+        public int DirectorId {get; set;}
         public virtual ICollection<ProjectLog> ProjectLogs { get; set; }
     }
 }
