@@ -1,0 +1,92 @@
+﻿@model IndiePal.Models.ViewModels.NewProjectAndPositions
+
+@{
+    ViewData["Title"] = "EditProject";
+}
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Editing a Project
+            </h1>
+            <h2 class="subtitle">
+                It needs a little adjustment.
+            </h2>
+        </div>
+    </div>
+</section>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditProject">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="Id" class="form-control" />
+            <input asp-for="DirectorId" class="form-control" />
+            <input asp-for="Active" class="form-control" />
+            <input asp-for="StartDate" class="form-control" />
+
+            <div class="form-group">
+                <label>What's the product called?</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>What's your budget?</label>
+                <input asp-for="Budget" class="form-control" />
+                <span asp-validation-for="Budget" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Edit your description!</label>
+                <textarea asp-for="Description" class="form-control" rows="5" cols="80"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+
+            <label>What empty roles need to be changed?</label>
+            <button class="button is-link" id="CreateForm">Add Position</button>
+            <div id="position">
+                @for (int i = 0; i < Model.Positions.Count; i++)
+                {
+                    @if (ViewBag.currentPositions[i].TalentId == null)
+                    {
+                        <div class="form-group">
+                            <input asp-for="Positions[i]" class="form-control" />
+                            <a href="#" class="remove_field">Remove</a>
+                            <span asp-validation-for="Positions[i]" class="text-danger"></span>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="is-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="false">Back to List</a>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var max_fields = 9; //maximum input boxes allowed
+        var wrapper = $("#position"); //Fields wrapper
+        var add_button = $("#CreateForm"); //Add button ID
+
+        var x = 0; //initlal text box count
+        $(add_button).click(function (e) { //on add input button click
+            e.preventDefault();
+            if (x < max_fields) { //max input box allowed
+                $(wrapper).append('<div class="form-group" ><input class="form-control" type="text" id="Positions_' + x + '_" name="Positions[' + x + ']" value=""><a href="#" class="remove_field">Remove</a><span class="text-danger field-validation-valid" data-valmsg-for="Positions[' + x + ']" data-valmsg-replace="true"></span></div>'); //add input box
+                x++; //text box increment
+            }
+        });
+
+        $(wrapper).on("click", ".remove_field", function (e) { //user click on remove text
+            e.preventDefault(); $(this).parent('div').remove(); x--;
+        })
+    });
+</script>

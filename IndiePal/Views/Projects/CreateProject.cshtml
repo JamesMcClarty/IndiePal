@@ -64,8 +64,8 @@ $(document).ready(function() {
 	$(add_button).click(function(e){ //on add input button click
 		e.preventDefault();
 		if(x < max_fields){ //max input box allowed
-			x++; //text box increment
-			$(wrapper).append('<div class="form-group" ><input class="form-control" type="text" id="Positions_'+x+'_" name="Positions['+x+']" value=""><a href="#" class="remove_field">Remove</a><span class="text-danger field-validation-valid" data-valmsg-for="Positions['+x+']" data-valmsg-replace="true"></span></div>'); //add input box
+            $(wrapper).append('<div class="form-group" ><input class="form-control" type="text" id="Positions_' + x + '_" name="Positions[' + x + ']" value=""><a href="#" class="remove_field">Remove</a><span class="text-danger field-validation-valid" data-valmsg-for="Positions[' + x + ']" data-valmsg-replace="true"></span></div>'); //add input box
+            x++; //text box increment
 		}
 	});
 
