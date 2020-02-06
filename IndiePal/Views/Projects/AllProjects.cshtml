@@ -3,41 +3,110 @@
     ViewData["Title"] = "AllProjects";
 }
 
-    <section class="hero is-primary">
-        <div class="hero-body">
-            <div class="container">
-                <h1 class="title">
-                    Projects
-                </h1>
-                <h2 class="subtitle">
-                    Browse other's projects, or create your own!
-                </h2>
-            </div>
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Projects
+            </h1>
+            <h2 class="subtitle">
+                Browse other's projects, or create your own!
+            </h2>
         </div>
-    </section>
+    </div>
+</section>
 
 @if (Model.Director == null)
 {
-<a asp-action="DirectorAgreement">Create New Director Account</a>
+    <a asp-action="DirectorAgreement">Create New Director Account</a>
 }
 
 else if (Model.AllProjects.Count < 2)
 {
-<a asp-action="CreateProject">Create a new project!</a>
+    <a class="button is-link" asp-action="CreateProject">Create a new project!</a>
 }
 
 <article class="media">
     <div class="flex-lg-wrap">
-    <figure class="media-left">
-        <p>All Projects</p>
-    </figure>
-    <figure class="media-left">
-        <p>Your Projects</p>
-    </figure>
+        <figure class="media-left">
+            <button class="button is-link" id="AllProjectsButton">All Projects</button>
+        </figure>
+        <figure class="media-left">
+            <button class="button is-link" id="YourProjectsButton">Your Projects</button>
+        </figure>
     </div>
     <div class="media-content">
         <div class="content">
-            
+
+            <div id="projects">
+
+                @foreach(Project project in Model.AllProjects)
+                {
+                    ViewBag.positionsavailable = false;
+
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <h4>@project.Title</h4> <span>Led by @Model.Director.ApplicationUser.UserName</span>
+
+                                <p>Started at: @project.StartDate</p>
+
+                                <h5>Positions open:</h5>
+
+                                @foreach (ProjectPosition position in project.CurrentPositions)
+                                {
+                                    if (position.TalentId == null)
+                                    {
+                                        ViewBag.positionsavailable = true;
+                                        <span class="tag is-primary is-medium">@position.Postion</span>
+                                    }
+                                }
+
+                                @if(ViewBag.positionsavailable == false)
+                                {
+                                    <p>None so far.</p>
+                                }
+                            </div>
+                        </div>
+                        <figure class="media-right">
+                            @if(ViewBag.DirectorId == project.DirectorId){
+                            <a class="button is-link" asp-action="EditProject" asp-route-id="@project.Id">Edit</a>
+                            }
+                        </figure>
+                        @if (ViewBag.viewingyours == true) {
+                            <figure class="media-right">
+                                <a class="button is-link" id="YourProjectsButton">Your Projects</a>
+                            </figure>
+                         }
+                    </div>
+                }
+
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <a class="pagination-previous">Previous</a>
+                    <a class="pagination-next">Next page</a>
+                    <div class="pagination-list">
+                        @if (ViewBag.index > 3)
+                        {
+                            <a class="pagination-link" aria-label="Goto page 1">1</a>
+                            <span class="pagination-ellipsis">&hellip;</span>
+                        }
+                        @if (ViewBag.index - 1 > 0)
+                        {
+                            <a class="pagination-link" aria-label="Goto page @(ViewBag.Index - 1)"> @(ViewBag.Index - 1)</a>
+                        }
+                            <a class="pagination-link is-current" aria-label="Page @ViewBag.index" aria-current="page">@ViewBag.index</a>
+                        @if (ViewBag.index + 1 <= Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)))
+                        {
+                            <a class="pagination-link" aria-label="Goto page "> @(ViewBag.Index + 1)</a>
+                        }
+                        @if (ViewBag.index < Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)) - 3)
+                        {
+                            <span class="pagination-ellipsis">&hellip;</span>
+                            <a class="pagination-link" aria-label="Goto page @Math.Floor(Convert.ToDouble(Model.AllProjects.Count/5))">@Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))</a>
+                        }
+                    </div>
+                </nav>
+            </div>
         </div>
     </div>
 </article>

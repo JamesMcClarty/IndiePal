@@ -1,5 +1,6 @@
 ﻿using IndiePal.Data;
 using IndiePal.Models;
+using IndiePal.Models.RouteModels;
 using IndiePal.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,22 +27,38 @@ namespace IndiePal.Controllers
 
         // GET: Projects
         [HttpGet]
-        public async Task<ActionResult> AllProjects()
+        public async Task<ActionResult> AllProjects(int index, bool viewingyours)
         {
             var user = await GetCurrentUserAsync();
 
-            var projectsList = await _context.Project.ToListAsync();
+            var projectsList = await _context.Project
+                .Include(d => d.CurrentPositions)
+                .ToListAsync();
 
             var director = await _context.Director
                 .Include(d => d.Projects)
+                    .ThenInclude(d => d.CurrentPositions)
                 .Include(d => d.ApplicationUser)
                 .FirstOrDefaultAsync(d => d.ApplicationUserId == user.Id);
 
             var projectAndDirector = new ProjectListAndDirectorViewModel()
             {
-                AllProjects = projectsList,
                 Director = director
             };
+
+            if (viewingyours == false)
+            {
+                projectAndDirector.AllProjects = projectsList.Skip((index - 1) * 5).Take(5).ToList();
+            }
+            else
+            {
+                projectAndDirector.AllProjects = director.Projects.Skip((index - 1) * 5).Take(5).ToList();
+            }
+
+            ViewBag.index = index;
+            ViewBag.viewingyours = viewingyours;
+            ViewBag.positionsavailable = false;
+            ViewBag.directorId = projectAndDirector.Director.Id;
 
             return View(projectAndDirector);
         }
@@ -125,7 +142,7 @@ namespace IndiePal.Controllers
                     Description = model.Description,
                     Budget = model.Budget,
                     Active = true,
-                    StartDate = System.DateTime.Today,
+                    StartDate = System.DateTime.Now,
                     DirectorId = director.Id
                 };
 
@@ -134,11 +151,94 @@ namespace IndiePal.Controllers
 
                 if (model.Positions != null)
                 {
-                    var positionsAdded = await AddPositions(model.Positions, project.StartDate);
+                    var positionsAdded = await AddPositions(model.Positions, project.StartDate, director.Id);
                 }
 
                 return RedirectToAction(nameof(AllProjects));
             }
+
+            return View();
+        }
+
+        public async Task<IActionResult> EditProject(int id)
+        {
+
+            var project = await _context.Project
+                .Include(p => p.CurrentPositions)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            var editingProject = new NewProjectAndPositions()
+            {
+                Id = project.Id,
+                Title = project.Title,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                Budget = project.Budget,
+                Active = project.Active,
+                DirectorId = project.DirectorId,
+                Positions = new List<string>()
+            };
+
+            foreach(ProjectPosition position in project.CurrentPositions)
+            {
+                editingProject.Positions.Add(position.Postion);
+            }
+
+            ViewBag.currentPositions = project.CurrentPositions.ToList();
+
+            return View(editingProject);
+        }
+
+        //POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProject(int id, [Bind("Id, Active, Title, Budget, Description, StartDate, DirectorId, Positions")] NewProjectAndPositions model)
+        {
+
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+               try
+                 {
+                    Project project = new Project()
+                    {
+                        Id = model.Id,
+                        Title = model.Title,
+                        Description = model.Description,
+                        Budget = model.Budget,
+                        Active = model.Active,
+                        StartDate = model.StartDate,                        
+                        DirectorId = model.DirectorId
+                    };
+
+                    _context.Project.Update(project);
+                    await _context.SaveChangesAsync();
+
+                    if (model.Positions != null)
+                    {
+                        var positionsAdded = await UpdatePositions(model.Positions, model.Id);
+                    }
+
+                    return RedirectToAction(nameof(AllProjects), new ProjectListRoute() { index = 1, viewingyours = false });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProjectExists(model.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+
 
             return View();
         }
@@ -168,14 +268,14 @@ namespace IndiePal.Controllers
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        private async Task<bool> AddPositions(List<string> StringList, System.DateTime dateTime)
+        private async Task<bool> AddPositions(List<string> StringList, System.DateTime dateTime, int directorId)
         {
 
             if (StringList.Count != 0)
             {
                 var obtainedProject = await _context.Project
                 .AsNoTracking()
-                .FirstOrDefaultAsync(o => o.StartDate == dateTime);
+                .FirstOrDefaultAsync(o => o.StartDate == dateTime && o.DirectorId == directorId);
 
                 foreach (string trimmedPosition in StringList)
                 {
@@ -183,6 +283,42 @@ namespace IndiePal.Controllers
                     {
                         Id = 0,
                         ProjectId = obtainedProject.Id,
+                        Postion = trimmedPosition
+
+                    };
+
+                    _context.ProjectPosition.Add(projectPosition);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return true;
+        }
+
+        private async Task<bool> UpdatePositions(List<string> StringList, int id)
+        {
+
+            if (StringList.Count != 0)
+            {
+                var obtainedPositions = await _context.ProjectPosition
+                    .Where(q => q.ProjectId == id)
+                    .ToListAsync();
+
+
+                foreach(ProjectPosition position in obtainedPositions)
+                {
+                    if(position.TalentId == null)
+                    {
+                        _context.ProjectPosition.Remove(position);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                foreach (string trimmedPosition in StringList)
+                {
+                    var projectPosition = new ProjectPosition()
+                    {
+                        Id = 0,
+                        ProjectId = id,
                         Postion = trimmedPosition
 
                     };
