@@ -31,8 +31,10 @@ namespace IndiePal.Controllers
         {
             var user = await GetCurrentUserAsync();
 
+
             var projectsList = await _context.Project
                 .Include(d => d.CurrentPositions)
+                .Where(d=>d.EndDate == null)
                 .ToListAsync();
 
             var director = await _context.Director
@@ -40,6 +42,9 @@ namespace IndiePal.Controllers
                     .ThenInclude(d => d.CurrentPositions)
                 .Include(d => d.ApplicationUser)
                 .FirstOrDefaultAsync(d => d.ApplicationUserId == user.Id);
+
+
+            director.Projects.OrderByDescending(q => q.EndDate);
 
             var projectAndDirector = new ProjectListAndDirectorViewModel()
             {
@@ -78,6 +83,18 @@ namespace IndiePal.Controllers
             };
 
             return View(UserDirector);
+        }
+
+        //Details
+        public async Task<ActionResult> Details(int id)
+        {
+            var project = await _context.Project
+                .Include(d => d.CurrentPositions)
+                .Include(d=> d.Director)
+                .ThenInclude(d => d.ApplicationUser)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            return View(project);
         }
 
         //POST
@@ -243,21 +260,43 @@ namespace IndiePal.Controllers
             return View();
         }
 
-        // DELETE: api/Projects/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Project>> DeleteProject(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CloseProject(int id, Project project)
         {
-            var project = await _context.Project.FindAsync(id);
-            if (project == null)
+            if (id != project.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            _context.Project.Remove(project);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var closeProject = await _context.Project
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
-            return project;
+                closeProject.EndDate = System.DateTime.Now;
+                closeProject.Active = false;
+
+                _context.Project.Update(closeProject);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(AllProjects), new ProjectListRoute() { index = 1, viewingyours = false });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
+
 
         private bool ProjectExists(int id)
         {
