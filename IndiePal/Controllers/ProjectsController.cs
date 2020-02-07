@@ -34,6 +34,8 @@ namespace IndiePal.Controllers
 
             var projectsList = await _context.Project
                 .Include(d => d.CurrentPositions)
+                .Include(d => d.Director)
+                .ThenInclude(d => d.ApplicationUser)
                 .Where(d=>d.EndDate == null)
                 .ToListAsync();
 
@@ -43,8 +45,13 @@ namespace IndiePal.Controllers
                 .Include(d => d.ApplicationUser)
                 .FirstOrDefaultAsync(d => d.ApplicationUserId == user.Id);
 
-
-            director.Projects.OrderByDescending(q => q.EndDate);
+            if (director != null)
+            {
+                if (director.Projects != null)
+                {
+                    director.Projects.OrderByDescending(q => q.EndDate);
+                }
+            }
 
             var projectAndDirector = new ProjectListAndDirectorViewModel()
             {
@@ -63,7 +70,10 @@ namespace IndiePal.Controllers
             ViewBag.index = index;
             ViewBag.viewingyours = viewingyours;
             ViewBag.positionsavailable = false;
-            ViewBag.directorId = projectAndDirector.Director.Id;
+            if (projectAndDirector.Director != null)
+            {
+                ViewBag.directorId = projectAndDirector.Director.Id;
+            }
 
             return View(projectAndDirector);
         }
@@ -90,9 +100,25 @@ namespace IndiePal.Controllers
         {
             var project = await _context.Project
                 .Include(d => d.CurrentPositions)
+                .Include(d => d.ProjectLogs)
                 .Include(d=> d.Director)
                 .ThenInclude(d => d.ApplicationUser)
                 .FirstOrDefaultAsync(d => d.Id == id);
+
+            var currentUser = await GetCurrentUserAsync();
+
+            var director = await _context.Director
+                .FirstOrDefaultAsync(d => d.ApplicationUserId == currentUser.Id);
+
+            if (director != null)
+            {
+                ViewBag.currentDirector = director.Id;
+            }
+
+            else
+            {
+                ViewBag.currentDirector = 0;
+            }
 
             return View(project);
         }
@@ -255,9 +281,7 @@ namespace IndiePal.Controllers
                 }
             }
 
-
-
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -293,8 +317,6 @@ namespace IndiePal.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
 

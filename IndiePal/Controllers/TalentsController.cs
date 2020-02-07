@@ -79,7 +79,7 @@ namespace IndiePal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Biography,Wage,SkillList")] NewTalentAndSkills model)
+        public async Task<IActionResult> CreatingTalent([Bind("Id,Biography,Wage,SkillList")] NewTalentAndSkills model)
         {
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");

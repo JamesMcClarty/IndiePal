@@ -1,5 +1,5 @@
 ﻿@model IndiePal.Models.Project
-@{ 
+@{
     ViewData["Title"] = "Details";
 }
 
@@ -35,6 +35,41 @@
 
                 <p>Budget: @Model.Budget</p>
 
+                <h4>Project Logs:</h4>
+                <div class="box">
+
+                    @if (Model.ProjectLogs.Count == 0)
+                    {
+                        <p>None so far!</p>
+                    }
+
+                    @foreach (ProjectLog log in Model.ProjectLogs)
+                    {
+                        <article class="media">
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>Log created: @log.DateMade</p>
+
+                                    <p>@log.Log</p>
+                                </div>
+                            </div>
+                            <div class="flex-lg-wrap">
+                                <figure class="media-left">
+                                    <a class="button is-link" asp-controller="ProjectLogs" asp-action="EditLog" asp-route-id="@log.Id">Edit</a>
+                                </figure>
+                                <figure class="media-left">
+                                    <a class="button is-link" asp-controller="ProjectLogs" asp-action="CreateLog" asp-route-id="@Model.Id">New Project Log</a>
+                                </figure>
+                            </div>
+                        </article>
+                    }
+                </div>
+
+                @if (ViewBag.currentDirector == Model.Director.Id)
+                {
+                <a class="button is-link" asp-controller = "ProjectLogs" asp-action="CreateLog" asp-route-id="@Model.Id">New Project Log</a>
+                }
+
                 <hr>
                 <h4>Open Positions:</h4>
                 <div>
@@ -61,5 +96,3 @@
         </div>
     </article>
 </div>
-
-

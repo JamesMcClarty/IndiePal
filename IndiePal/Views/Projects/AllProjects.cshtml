@@ -31,9 +31,12 @@ else if (Model.AllProjects.Count < 2)
         <figure class="media-left">
             <a class="button is-link" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="false">All Projects</a>
         </figure>
+        @if (Model.Director != null)
+        {
         <figure class="media-left">
             <a class="button is-link" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="true">Your Projects</a>
         </figure>
+        }
     </div>
     <div class="media-content">
         <div class="content">
@@ -47,7 +50,7 @@ else if (Model.AllProjects.Count < 2)
                     <div class="media">
                         <div class="media-content">
                             <div class="content">
-                                <h4>@project.Title</h4> <span>Led by @Model.Director.ApplicationUser.UserName</span>
+                                <h4>@project.Title</h4> <span>Led by @project.Director.ApplicationUser.UserName</span>
 
                                 @if (project.Active)
                                 {

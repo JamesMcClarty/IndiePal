@@ -1,0 +1,42 @@
+﻿@model IndiePal.Models.ProjectLog
+@{
+    ViewData["Title"] = "EditLog";
+}
+
+<h1>EditLog</h1>
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Creating a Project Log
+            </h1>
+            <h2 class="subtitle">
+                Notify people of your progress!
+            </h2>
+        </div>
+    </div>
+</section>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditLog">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="DateMade" />
+            <input type="hidden" asp-for="ProjectId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Create a description!</label>
+                <textarea asp-for="Log" class="form-control" rows="6" cols="100"></textarea>
+                <span asp-validation-for="Log" class="text-danger"></span>
+            </div>
+
+            <input type="submit" value="Edit" class="button is-primary" />
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId">Back to project</a>
+</div>
+
