@@ -24,6 +24,7 @@ namespace IndiePal.Models
         public string Description { get; set; }
         [Required]
         public int DirectorId {get; set;}
+        public virtual Director Director { get; set; }
         public virtual ICollection<ProjectLog> ProjectLogs { get; set; }
         public virtual ICollection<ProjectPosition> CurrentPositions { get; set; }
     }

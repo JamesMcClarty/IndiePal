@@ -1,0 +1,65 @@
+﻿@model IndiePal.Models.Project
+@{ 
+    ViewData["Title"] = "Details";
+}
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                @Model.Title
+            </h1>
+            <h2 class="subtitle">
+                Director: @Model.Director.ApplicationUser.UserName
+            </h2>
+        </div>
+    </div>
+</section>
+
+<div class="box">
+    <article class="media">
+        <div class="media-content">
+            <div class="content">
+
+                <h5>Date Created: @Model.StartDate</h5>
+
+                @if (Model.EndDate != null)
+                {
+                    <h5>Date Created: @Model.EndDate</h5>
+                }
+
+                <h4>Description</h4>
+                <p>
+                    @Model.Description
+                </p>
+
+                <p>Budget: @Model.Budget</p>
+
+                <hr>
+                <h4>Open Positions:</h4>
+                <div>
+                    @foreach (ProjectPosition position in Model.CurrentPositions)
+                    {
+                        if (position.TalentId == null)
+                        {
+                            <p class"is-medium">@position.Postion</p>
+                        }
+                    }
+                </div>
+
+                <h4>Filled Positions:</h4>
+                <div>
+                    @foreach (ProjectPosition position in Model.CurrentPositions)
+                    {
+                        if (position.TalentId != null)
+                        {
+                            <p class"is-medium">@position.Postion</p>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+
+

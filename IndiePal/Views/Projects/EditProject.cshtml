@@ -1,5 +1,4 @@
 ﻿@model IndiePal.Models.ViewModels.NewProjectAndPositions
-
 @{
     ViewData["Title"] = "EditProject";
 }
@@ -17,14 +16,38 @@
     </div>
 </section>
 
+
+<div class="form-group">
+    <label>Edit your project status.</label>
+
+    @if (Model.Active)
+    {
+        <p>Current Status: <span id="statusText" class="has-text-success">Active</span></p>
+    }
+
+    @if (!Model.Active && Model.EndDate == null)
+    {
+        <p>Current Status: <span id="statusText" class="has-text-warning">On Hiatus</span></p>
+    }
+
+    @if (!Model.Active && Model.EndDate != null)
+    {
+        <p>Current Status: <span id="statusText" class="has-text-danger">Closed</span></p>
+    }
+
+    @if (Model.EndDate == null){
+    <button class="button is-primary" id="openStatusModal" data-target="#statusModal">Edit Status</button>
+    }
+</div>
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditProject">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="Id" class="form-control" />
-            <input asp-for="DirectorId" class="form-control" />
-            <input asp-for="Active" class="form-control" />
-            <input asp-for="StartDate" class="form-control" />
+            <input type="hidden" asp-for="Id" class="form-control" />
+            <input type="hidden" asp-for="DirectorId" class="form-control" />
+            <input type="hidden" asp-for="StartDate" class="form-control" />
+            <input type="hidden" asp-for="Active" class="form-control"/>
 
             <div class="form-group">
                 <label>What's the product called?</label>
@@ -41,7 +64,6 @@
                 <textarea asp-for="Description" class="form-control" rows="5" cols="80"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-
 
             <label>What empty roles need to be changed?</label>
             <button class="button is-link" id="CreateForm">Add Position</button>
@@ -65,9 +87,73 @@
     </div>
 </div>
 
+
+
 <div>
     <a asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="false">Back to List</a>
 </div>
+
+
+<div id="statusModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <article class="media">
+                <div class="media-content">
+                    <div class="content">
+                        <p>
+                            <strong>What do you wish to do with your account?</strong>
+                        </p>
+                    </div>
+                    @if (Model.Active == true)
+                    {
+                        <button class="button is-warning" id="activeIsFalse" data-target="#Active">Put on Hiatus</button>
+                        <button class="button is-primary d-none" id="activeIsTrue" data-target="#Active">Open</button>
+                    }
+                    @if (Model.Active == false)
+                    {
+                        <button class="button is-warning d-none" id="activeIsFalse" data-target="#Active">Put on Hiatus</button>
+                        <button class="button is-primary" id="activeIsTrue" data-target="#Active">Open</button>
+                    }
+
+                    <button class="button is-danger" id="openCloseModal" data-target="#closeModal">Close</button>
+
+                    <button class="button is-light" id="closeStatusModal" data-target="#statusModal">Cancel</button>
+
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+
+<div id="closeModal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <article class="media">
+                <div class="media-content">
+                    <div class="content">
+                        <p class="is-warning">
+                            <strong>Are you sure? Once you close the project, it stays closed.</strong>
+                        </p>
+                    </div>
+
+                    <form asp-action="CloseProject">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="button is-danger">Yes</button>
+                    </form>
+
+                    <span><button class="button is-light" id="closeCloseModal" data-target="#closeModal">No</button></span>
+
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
@@ -76,7 +162,7 @@
         var wrapper = $("#position"); //Fields wrapper
         var add_button = $("#CreateForm"); //Add button ID
 
-        var x = 0; //initlal text box count
+        var x = @Model.Positions.Count; //initlal text box count
         $(add_button).click(function (e) { //on add input button click
             e.preventDefault();
             if (x < max_fields) { //max input box allowed
@@ -90,3 +176,49 @@
         })
     });
 </script>
+
+<script>
+    $("#openStatusModal").click(function () {
+        var target = $(this).data("target");
+        $("html").addClass("is-clipped");
+        $(target).addClass("is-active");
+    });
+
+    $("#closeStatusModal").click(function () {
+        $("html").removeClass("is-clipped");
+        $("#statusModal").removeClass("is-active");
+    });
+
+    $("#openCloseModal").click(function () {
+        var target = $(this).data("target");
+        $("#statusModal").removeClass("is-active");
+        $(target).addClass("is-active");
+    });
+
+    $("#closeCloseModal").click(function () {
+        $("#closeModal").removeClass("is-active");
+    });
+
+   $("#activeIsFalse").click(function () {
+       $("#statusModal").removeClass("is-active");
+       $("html").removeClass("is-clipped");
+       $("#Active").val("false");
+       $("#statusText").text("On Haitus")
+       $("#statusText").removeClass("has-text-success");
+       $("#statusText").addClass("has-text-warning");
+       $("#activeIsFalse").addClass("d-none");
+       $("#activeIsTrue").removeClass("d-none");
+   });
+
+     $("#activeIsTrue").click(function () {
+       $("#statusModal").removeClass("is-active");
+       $("html").removeClass("is-clipped");
+       $("#Active").val("true");
+       $("#statusText").text("Open")
+       $("#statusText").removeClass("has-text-warning");
+       $("#statusText").addClass("has-text-success");
+       $("#activeIsFalse").removeClass("d-none");
+       $("#activeIsTrue").addClass("d-none");
+   });
+</script>
+
