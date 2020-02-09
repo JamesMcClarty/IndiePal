@@ -58,16 +58,40 @@
                                     <a class="button is-link" asp-controller="ProjectLogs" asp-action="EditLog" asp-route-id="@log.Id">Edit</a>
                                 </figure>
                                 <figure class="media-left">
-                                    <a class="button is-link" asp-controller="ProjectLogs" asp-action="CreateLog" asp-route-id="@Model.Id">New Project Log</a>
+                                    <a class="button is-warning openDeleteLog" data-target="#deleteModal-@log.Id">Delete</a>
                                 </figure>
                             </div>
                         </article>
+
+                        <div id="deleteModal-@log.Id" class="modal">
+                            <div class="modal-background"></div>
+                            <div class="modal-content">
+                                <div class="box">
+                                    <article class="media">
+                                        <div class="media-content">
+                                            <div class="content">
+                                                <p class="is-warning">
+                                                    <strong>Are you sure? Once you delete the log, it's gone for good.</strong>
+                                                </p>
+                                            </div>
+
+                                            <form asp-controller="ProjectLogs" asp-action="Delete" asp-route-id="@log.Id">
+                                                <button type="submit" class="button is-danger">Yes</button>
+                                            </form>
+
+                                            <span><button class="button is-light closeDeleteLog" data-target="#deleteModal-@log.Id">No</button></span>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
                     }
+
                 </div>
 
                 @if (ViewBag.currentDirector == Model.Director.Id)
                 {
-                <a class="button is-link" asp-controller = "ProjectLogs" asp-action="CreateLog" asp-route-id="@Model.Id">New Project Log</a>
+                    <a class="button is-link" asp-controller="ProjectLogs" asp-action="CreateLog" asp-route-id="@Model.Id">New Project Log</a>
                 }
 
                 <hr>
@@ -96,3 +120,21 @@
         </div>
     </article>
 </div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+       $(".openDeleteLog").click(function () {
+        var target = $(this).data("target");
+        $("html").addClass("is-clipped");
+        $(target).addClass("is-active");
+    });
+
+    $(".closeDeleteLog").click(function () {
+        var target = $(this).data("target");
+        $("html").removeClass("is-clipped");
+        $(target).removeClass("is-active");
+    });
+</script>
