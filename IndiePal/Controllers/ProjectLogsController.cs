@@ -99,11 +99,13 @@ namespace IndiePal.Controllers
         }
 
 
-        // DELETE: api/ProjectLogs/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<ProjectLog>> DeleteProjectLog(int id)
+        //ProjectLogs/Delete/5
+        [HttpPost,ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
             var projectLog = await _context.ProjectLog.FindAsync(id);
+
             if (projectLog == null)
             {
                 return NotFound();
@@ -112,7 +114,7 @@ namespace IndiePal.Controllers
             _context.ProjectLog.Remove(projectLog);
             await _context.SaveChangesAsync();
 
-            return projectLog;
+            return Redirect("~/Projects/Details/" + projectLog.ProjectId);
         }
 
         private bool ProjectLogExists(int id)
