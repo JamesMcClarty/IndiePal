@@ -16,6 +16,8 @@
     </div>
 </section>
 
+<br>
+
 @if (Model.Talent == null)
 {
     <a asp-action="CreatingTalent">Create New Talent</a>
@@ -23,127 +25,229 @@
 
 else
 {
+    <div class="content">
+        <h4>Your talent details</h4>
+    </div>
     <div class="box ">
         <article class="media">
-            <div class="media-content">
+            <div class="media-content content">
+                <h3>@Model.Talent.ApplicationUser.UserName</h3>
                 <div class="content">
-                    <p>
-                        <strong>@Model.Talent.ApplicationUser.UserName</strong>
-                    </p>
-                    <br>
-
                     <p>
                         <strong>Skills at a glance:</strong>
                     <p>
+                        @if (Model.Talent.Skills.Count == 0)
+                        {
+                        <p>None listed.</p>
+                        }
+                        else
+                        {
 
-                        <ul>
-                            @if (Model.Talent.Skills.Count > 3)
+                            if (Model.Talent.Skills.Count > 3)
                             {
                                 for (int i = 0; i < 3; i++)
                                 {
-                                    <li>@Model.Talent.Skills[i].Skill</li>
+                                <span class="tag is-primary is-medium">@Model.Talent.Skills[i].Skill</span>
                                 }
                             }
                             else
                             {
                                 foreach (TalentSkill skill in Model.Talent.Skills)
                                 {
-                                    <li>@skill.Skill</li>
+                                <span class="tag is-primary is-medium">@skill.Skill</span>
                                 }
                             }
-                        </ul>
-                        <nav class="level is-mobile">
-                            <div class="level-left">
-                                <a asp-action="Details" asp-route-id="@Model.Talent.Id">Details</a> |
-                                <a asp-action="Edit" asp-route-id="@Model.Talent.Id">Edit</a> |
-                                @if (Model.Talent.Active == true)
-                                {
+                        }
+                        <p>Wage: @Model.Talent.Wage</p>
+                    </div>
+                </div>
 
-                                    <button class="button is-primary" id="openCloseModal" data-target="#closemodal">Close Talent Account</button>
+                <div class="flex-lg-wrap">
+                    <figure class="media-right">
+                        <a class="button is-link" asp-action="Details" asp-route-id="@Model.Talent.Id">Details</a>
+                    </figure>
+                    <br>
+                    <figure class="media-right">
+                        <a class="button is-link" asp-action="Edit" asp-route-id="@Model.Talent.Id">Edit</a>
+                    </figure>
+                    <br>
+                    @if (Model.Talent.Active == true)
+                    {
+                        <figure class="media-right">
+                            <button class="button is-warning" id="openCloseModal" data-target="#closemodal">Close Talent Account</button>
+                        </figure>
+                    }
+                    else
+                    {
+                        <figure class="media-right">
+                            <button class="button is-primary" id="openOpenModal" data-target="#openmodal">Open Talent Account</button>
+                        </figure>
+                    }
+                </div>
+            </article>
+        </div>
 
-                                }
-                                else
-                                {
-                                    <button class ="button is-primary" id="openOpenModal" data-target="#openmodal">Open Talent Account</button>
-                                }
+        <div id="closemodal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>Warning</strong>
+                                    <br>
+                                    Do you wish to close your talent account? You can reopen it to be listed later.
+                                </p>
                             </div>
-                        </nav>
+                            <form asp-action="Close" asp-route-id="@Model.Talent.Id">
+                                <button class="button is-primary">Accept</button>
+                            </form>
+                            <button class="button is-warning" id="closeCloseModal">Close</button>
+                        </div>
+                    </article>
                 </div>
             </div>
-        </article>
-    </div>
+        </div>
 
-    <div id="closemodal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>Warning</strong>
-                                <br>
-                                Do you wish to close your talent account? You can reopen it to be listed later.
-                            </p>
+        <div id="openmodal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>Warning</strong>
+                                    <br>
+                                    Open your account? It will be put back on the list.
+                                </p>
+                            </div>
+                            <form asp-action="Reopen" asp-route-id="@Model.Talent.Id">
+                                <button class="button is-primary">Accept</button>
+                            </form>
+                            <button class="button is-warning" id="closeOpenModal">Close</button>
                         </div>
-                        <form asp-action="Close" asp-route-id="@Model.Talent.Id">
-                            <button class="button is-primary">Accept</button>
-                        </form>
-                        <button class="button is-warning" id="closeCloseModal">Close</button>
-
-                    </div>
-                </article>
+                    </article>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="openmodal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>Warning</strong>
-                                <br>
-                                Open your account? It will be put back on the list.
-                            </p>
-                        </div>
-                        <form asp-action="Reopen" asp-route-id="@Model.Talent.Id">
-                            <button class="button is-primary">Accept</button>
-                        </form>
-                        <button class="button is-warning" id="closeOpenModal">Close</button>
-
-                    </div>
-                </article>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script>
-        $("#openCloseModal").click(function () {
-            var target = $(this).data("target");
-            $("html").addClass("is-clipped");
-            $(target).addClass("is-active");
-        });
-
-        $("#closeCloseModal").click(function () {
-            $("html").removeClass("is-clipped");
-            $("#closemodal").removeClass("is-active");
-        });
-
-         $("#openOpenModal").click(function () {
-            var target = $(this).data("target");
-            $("html").addClass("is-clipped");
-            $(target).addClass("is-active");
-        });
-
-        $("#closeOpenModal").click(function () {
-            $("html").removeClass("is-clipped");
-            $("#closemodal").removeClass("is-active");
-        });
-    </script>
-
 }
+
+
+<div class="content">
+    <h4>All talents</h4>
+</div>
+
+<article class="media">
+    <div class="media-content">
+        <div class="content">
+            <div id="talents">
+                @foreach (Talent talent in Model.AllTalents)
+                {
+                    <article class="media">
+                        <div class="media-content">
+                            <h3>@talent.ApplicationUser.UserName</h3>
+                            <div class="content">
+                                <p>
+                                    <strong>Skills at a glance:</strong>
+                                <p>
+                                    @if (talent.Skills.Count == 0)
+                                    {
+                                    <p>None listed.</p>
+                                    }
+
+                                    else
+                                    {
+
+                                        if (talent.Skills.Count > 3)
+                                        {
+                                            for (int i = 0; i < 3; i++)
+                                            {
+                                            <span class="tag is-primary is-medium">@talent.Skills[i].Skill</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (TalentSkill skill in talent.Skills)
+                                            {
+                                            <span class="tag is-primary is-medium">@skill.Skill</span>
+                                            }
+                                        }
+                                    }
+
+                                    <p>Wage: @talent.Wage<p>
+                                </div>
+                            </div>
+
+                            <div class="flex-lg-wrap">
+                                <figure class="media-right">
+                                    <a class="button is-link" asp-action="Details" asp-route-id="@talent.Id">Details</a>
+                                </figure>
+                            </div>
+                        </article>
+                }
+
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    @if (ViewBag.index != 1)
+                    {
+                        <a class="pagination-previous" asp-action="AllTalents" asp-route-index="@(ViewBag.index - 1)">Previous</a>
+                    }
+                    @if (ViewBag.index != Math.Floor(Convert.ToDouble(Model.AllTalents.Count / 5)+ 1))
+                    {
+                        <a class="pagination-next" asp-action="AllTalents" asp-route-index="@(ViewBag.index + 1)">Next page</a>
+                    }
+
+                    <div class="pagination-list">
+                        @if (ViewBag.index > 3)
+                        {
+                            <a class="pagination-link" aria-label="Goto page 1" asp-action="AllTalents" asp-route-index="1">1</a>
+                            <span class="pagination-ellipsis">&hellip;</span>
+                        }
+                        @if (ViewBag.index - 1 > 0)
+                        {
+                            <a class="pagination-link" aria-label="Goto page @(ViewBag.Index - 1)" asp-action="AllTalents" asp-route-index="@(ViewBag.index - 1)"> @(ViewBag.Index - 1)</a>
+                        }
+                        <a class="pagination-link is-current" aria-label="Page @ViewBag.index" aria-current="page" asp-action="AllTalents" asp-route-index="@(ViewBag.index)">@ViewBag.index</a>
+                        @if (ViewBag.index + 1 <= Math.Floor(Convert.ToDouble(Model.AllTalents.Count / 5)))
+                        {
+                            <a class="pagination-link" aria-label="Goto page @(ViewBag.index + 1)" asp-action="AllTalents" asp-route-index="@(ViewBag.index + 1)"> @(ViewBag.index + 1)</a>
+                        }
+                        @if (ViewBag.index < Math.Floor(Convert.ToDouble(Model.AllTalents.Count / 5)) - 3)
+                        {
+                            <span class="pagination-ellipsis">&hellip;</span>
+                            <a class="pagination-link" aria-label="Goto page @Math.Floor(Convert.ToDouble(Model.AllTalents.Count / 5))" asp-action="AllTalents" asp-route-index="@Math.Floor(Convert.ToDouble(Model.AllTalents.Count / 5))">  @Math.Floor(Convert.ToDouble(Model.AllTalents.Count / 5))</a>
+                        }
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $("#openCloseModal").click(function () {
+        var target = $(this).data("target");
+        $("html").addClass("is-clipped");
+        $(target).addClass("is-active");
+    });
+
+    $("#closeCloseModal").click(function () {
+        $("html").removeClass("is-clipped");
+        $("#closemodal").removeClass("is-active");
+    });
+
+    $("#openOpenModal").click(function () {
+        var target = $(this).data("target");
+        $("html").addClass("is-clipped");
+        $(target).addClass("is-active");
+    });
+
+    $("#closeOpenModal").click(function () {
+        $("html").removeClass("is-clipped");
+        $("#closemodal").removeClass("is-active");
+    });
+</script>

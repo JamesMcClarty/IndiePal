@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IndiePal.Migrations
 {
-    public partial class Starter : Migration
+    public partial class @default : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -279,11 +279,53 @@ namespace IndiePal.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProjectPosition_Talent_TalentId",
                         column: x => x.TalentId,
                         principalTable: "Talent",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Message",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Header = table.Column<string>(nullable: false),
+                    Body = table.Column<string>(nullable: true),
+                    SenderId = table.Column<string>(nullable: false),
+                    RecieverId = table.Column<string>(nullable: false),
+                    ProjectId = table.Column<int>(nullable: true),
+                    ProjectPositionId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Message_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Message_ProjectPosition_ProjectPositionId",
+                        column: x => x.ProjectPositionId,
+                        principalTable: "ProjectPosition",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Message_AspNetUsers_RecieverId",
+                        column: x => x.RecieverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Message_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -291,7 +333,7 @@ namespace IndiePal.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "00000000-ffff-ffff-ffff-ffffffffffff", 0, "f7d4a8d9-aacf-45da-b32f-da17f493b460", "admin@admin.com", true, "admin", "admin", false, null, "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAEAACcQAAAAEBDPC/H1RtMLIKWesoBI9w7UdcrUMzW17xG1geJgI6M4+ppmlHV0DJ6wx/J7KOswPQ==", null, false, "7f434309-a4d9-48e9-9ebb-8803db794577", false, "adminguy" });
+                values: new object[] { "00000000-ffff-ffff-ffff-ffffffffffff", 0, "f8a6b3b5-d19a-4ab5-a388-a51da0a5ee47", "admin@admin.com", true, "admin", "admin", false, null, "ADMIN@ADMIN.COM", "ADMIN@ADMIN.COM", "AQAAAAEAACcQAAAAEJEhDC1i3e2v3l5+iHoa9nBEQyxBU1AtBEYcON5/8P4HMlJ3NqrIbiZEE8lWwO2Twg==", null, false, "7f434309-a4d9-48e9-9ebb-8803db794577", false, "adminguy" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -336,6 +378,26 @@ namespace IndiePal.Migrations
                 name: "IX_Director_ApplicationUserId",
                 table: "Director",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_ProjectId",
+                table: "Message",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_ProjectPositionId",
+                table: "Message",
+                column: "ProjectPositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_RecieverId",
+                table: "Message",
+                column: "RecieverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_SenderId",
+                table: "Message",
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Project_DirectorId",
@@ -386,16 +448,19 @@ namespace IndiePal.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ProjectLog");
+                name: "Message");
 
             migrationBuilder.DropTable(
-                name: "ProjectPosition");
+                name: "ProjectLog");
 
             migrationBuilder.DropTable(
                 name: "TalentSkill");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ProjectPosition");
 
             migrationBuilder.DropTable(
                 name: "Project");

@@ -31,7 +31,6 @@ namespace IndiePal.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-
             var projectsList = await _context.Project
                 .Include(d => d.CurrentPositions)
                 .Include(d => d.Director)
@@ -58,15 +57,27 @@ namespace IndiePal.Controllers
                 Director = director
             };
 
-            if (viewingyours == false)
+            if (viewingyours == true)
             {
-                projectAndDirector.AllProjects = projectsList.Skip((index - 1) * 5).Take(5).ToList();
-            }
-            else
-            {
-                projectAndDirector.AllProjects = director.Projects.Skip((index - 1) * 5).Take(5).ToList();
+                projectAndDirector.AllProjects = director.Projects;
             }
 
+            else
+            {
+                projectAndDirector.AllProjects = projectsList;
+            }
+
+            int openCount = 0;
+
+            foreach(Project project in director.Projects)
+            {
+                if (project.Active)
+                {
+                    openCount++;
+                }
+            }
+
+            ViewBag.count = openCount;
             ViewBag.index = index;
             ViewBag.viewingyours = viewingyours;
             ViewBag.positionsavailable = false;

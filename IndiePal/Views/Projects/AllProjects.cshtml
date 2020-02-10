@@ -21,7 +21,7 @@
     <a asp-action="DirectorAgreement">Create New Director Account</a>
 }
 
-else if (Model.AllProjects.Count < 2)
+else if (ViewBag.count < 2)
 {
     <a class="button is-link" asp-action="CreateProject">Create a new project!</a>
 }

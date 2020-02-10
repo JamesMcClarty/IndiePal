@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IndiePal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200205172808_Starter")]
-    partial class Starter
+    [Migration("20200209231633_default")]
+    partial class @default
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -98,7 +98,7 @@ namespace IndiePal.Migrations
                         {
                             Id = "00000000-ffff-ffff-ffff-ffffffffffff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f7d4a8d9-aacf-45da-b32f-da17f493b460",
+                            ConcurrencyStamp = "f8a6b3b5-d19a-4ab5-a388-a51da0a5ee47",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -106,7 +106,7 @@ namespace IndiePal.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBDPC/H1RtMLIKWesoBI9w7UdcrUMzW17xG1geJgI6M4+ppmlHV0DJ6wx/J7KOswPQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJEhDC1i3e2v3l5+iHoa9nBEQyxBU1AtBEYcON5/8P4HMlJ3NqrIbiZEE8lWwO2Twg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "7f434309-a4d9-48e9-9ebb-8803db794577",
                             TwoFactorEnabled = false,
@@ -132,6 +132,47 @@ namespace IndiePal.Migrations
                     b.ToTable("Director");
                 });
 
+            modelBuilder.Entity("IndiePal.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Header")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProjectPositionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecieverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectPositionId");
+
+                    b.HasIndex("RecieverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Message");
+                });
+
             modelBuilder.Entity("IndiePal.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -152,7 +193,7 @@ namespace IndiePal.Migrations
                     b.Property<int>("DirectorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")
@@ -207,7 +248,7 @@ namespace IndiePal.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TalentId")
+                    b.Property<int?>("TalentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -412,9 +453,32 @@ namespace IndiePal.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("IndiePal.Models.Message", b =>
+                {
+                    b.HasOne("IndiePal.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("IndiePal.Models.ProjectPosition", "ProjectPosition")
+                        .WithMany()
+                        .HasForeignKey("ProjectPositionId");
+
+                    b.HasOne("IndiePal.Models.ApplicationUser", "Reciever")
+                        .WithMany()
+                        .HasForeignKey("RecieverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IndiePal.Models.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("IndiePal.Models.Project", b =>
                 {
-                    b.HasOne("IndiePal.Models.Director", null)
+                    b.HasOne("IndiePal.Models.Director", "Director")
                         .WithMany("Projects")
                         .HasForeignKey("DirectorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -433,16 +497,14 @@ namespace IndiePal.Migrations
             modelBuilder.Entity("IndiePal.Models.ProjectPosition", b =>
                 {
                     b.HasOne("IndiePal.Models.Project", "Project")
-                        .WithMany()
+                        .WithMany("CurrentPositions")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("IndiePal.Models.Talent", "Talent")
                         .WithMany()
-                        .HasForeignKey("TalentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TalentId");
                 });
 
             modelBuilder.Entity("IndiePal.Models.Talent", b =>

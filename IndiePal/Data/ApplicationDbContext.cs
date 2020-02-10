@@ -19,6 +19,7 @@ namespace IndiePal.Data
         public DbSet<ProjectPosition> ProjectPosition { get; set; }
         public DbSet<Talent> Talent { get; set; }
         public DbSet<TalentSkill> TalentSkill { get; set; }
+        public DbSet<Message> Message { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
