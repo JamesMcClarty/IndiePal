@@ -1,0 +1,36 @@
+﻿@model IndiePal.Models.Message
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Message from @Model.Sender.UserName
+                </h1>
+                <h2 class="subtitle">
+                    I wonder what it says!
+                </h2>
+            </div>
+        </div>
+    </section>
+
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+                  <h5>@Model.Header</h5>
+                    <p class="p-md-7"> @Model.Body </p>
+
+                    @if(Model.ProjectId != null)
+                    {
+                        <form asp-controller="Projects" asp-action="AssignTalent" asp-route-PositionId="@Model.ProjectPositionId" asp-route-MessageId="@Model.Id">
+                            <button type="submit" class="button is-primary">Accept</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </article>
+
+

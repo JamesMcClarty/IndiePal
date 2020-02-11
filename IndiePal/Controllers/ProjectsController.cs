@@ -330,13 +330,60 @@ namespace IndiePal.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignTalent(int PositionId, int MessageId) 
+        {
+            try
+            {
+                var user = await GetCurrentUserAsync();
+
+                var position = await _context.ProjectPosition
+                    .FirstOrDefaultAsync(q => q.Id == PositionId);
+
+                if(position == null || position.TalentId != null)
+                {
+                    return BadRequest();
+                }
+
+                var talent = await _context.Talent
+                    .FirstOrDefaultAsync(q => q.ApplicationUserId == user.Id);
+
+                var message = await _context.Message
+                    .FirstOrDefaultAsync(q => q.Id == MessageId);
+
+                position.TalentId = talent.Id;
+
+                _context.Message.Remove(message);
+                _context.ProjectPosition.Update(position);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Details), new ProjectDetail() {id = position.ProjectId});
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PositionExists(PositionId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        //Helper methods
 
         private bool ProjectExists(int id)
         {
             return _context.Project.Any(e => e.Id == id);
         }
 
-        //Helper methods
+        private bool PositionExists(int id)
+        {
+            return _context.ProjectPosition.Any(e => e.Id == id);
+        }
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 

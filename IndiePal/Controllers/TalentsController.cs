@@ -63,6 +63,8 @@ namespace IndiePal.Controllers
             var user = await GetCurrentUserAsync();
 
             var director = await _context.Director
+                .Include(p => p.Projects)
+                    .ThenInclude(p => p.CurrentPositions)
                 .FirstOrDefaultAsync(q => q.ApplicationUserId == user.Id);
 
             var talent = await _context.Talent
@@ -77,7 +79,22 @@ namespace IndiePal.Controllers
             }
 
             ViewBag.IsUserCurrentTalent = talent.ApplicationUserId == user.Id;
-            ViewBag.IsUserDirector = director != null && talent.ApplicationUserId != user.Id; 
+            ViewBag.IsUserDirector = director != null && talent.ApplicationUserId != user.Id;
+
+            bool positionsAvailable = false;
+
+            foreach(Project project in director.Projects)
+            {
+                foreach(ProjectPosition projectPosition in project.CurrentPositions)
+                {
+                    if(projectPosition.TalentId == null)
+                    {
+                        positionsAvailable = true;
+                    }
+                }
+            }
+
+            ViewBag.ArePositionsAvailable = positionsAvailable;
 
             return View(talent);
         }

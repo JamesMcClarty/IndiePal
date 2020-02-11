@@ -24,21 +24,36 @@
             <input type="hidden" asp-for="RecieverId" />
 
             <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select id="ProjectId" asp-for="ProjectId" class="form-control" asp-items="@Model.SelectProjects"></select>
+                <label class="control-label">Position</label>
+                <select asp-for="ProjectId" class="form-control" asp-items="@Model.SelectProjects"></select>
                 <span asp-validation-for="ProjectId" class="text-danger"></span>
             </div>
 
-                <div class="form-group">
-                    <label class="control-label" for="ProjectId">ProjectId</label>
-                    <select id="ProjectPositionId" class="form-control" name="ProjectPositionId">
-                        @foreach (ProjectPosition position in Model.SeperatePositions[Model.SelectProjects.First().Value])
+            <div class="form-group selectDiv">
+                <label class="control-label">Position</label>
+                <select id ="@Model.SelectProjects.First().Value" class="form-control selectForm" name="ProjectPositionId">
+                    @foreach (ProjectPosition position in Model.SeperatePositions[Model.SelectProjects.First().Value])
+                    {
+                        <option class="option" value="@position.Id">@position.Postion</option>
+                    }
+                </select>
+                <span class="text-danger field-validation-valid" data-valmsg-for="ProjectId" data-valmsg-replace="true"></span>
+            </div>
+
+            @for (int i = 1; i < Model.SelectProjects.Count; i++)
+            {
+
+                <div class="form-group selectDiv d-none">
+                    <label class="control-label">Position</label>
+                    <select id="@Model.SelectProjects[i].Value" class="form-control selectForm" name="ProjectPositionId">
+                        @foreach (ProjectPosition position in Model.SeperatePositions[Model.SelectProjects[i].Value])
                         {
                             <option class="option" value="@position.Id">@position.Postion</option>
                         }
                     </select>
                     <span class="text-danger field-validation-valid" data-valmsg-for="ProjectId" data-valmsg-replace="true"></span>
                 </div>
+            }
 
             <div class="form-group">
                 <label>Header</label>
@@ -63,12 +78,14 @@
 
     $(document).ready(function () {
 
-        $("#ProjectId").OnChange(function (e) {
-
-            var valueArray = @Model.SeperatePositions;
-            console.log(valueArray);
-           
-
+        $("#ProjectId").change(function (e) {
+            var value = $("#ProjectId").val();
+            var idString = "#" + value;
+            $(".selectForm").removeAttr("name");
+            $(idString).attr("name", "ProjectPositionId");
+            $(".selectDiv").removeClass("d-none");
+            $(".selectDiv").addClass("d-none");
+            $(idString).parent().removeClass("d-none");
         });
-	});
+    });
 </script>

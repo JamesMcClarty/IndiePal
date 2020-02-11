@@ -38,7 +38,7 @@
             </div>
             <nav class="level is-mobile">
                 <div class="level-left">
-                    @if (ViewBag.IsUserDirector)
+                    @if (ViewBag.IsUserDirector && ViewBag.ArePositionsAvailable)
                     {
                         <a class="button is-link" asp-controller="Messages" asp-action="SendHireMessage" asp-route-id="@Model.Id">Send Hire Invite</a>
                     }

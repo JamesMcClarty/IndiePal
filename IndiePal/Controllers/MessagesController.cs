@@ -26,10 +26,15 @@ namespace IndiePal.Controllers
         }
 
         // GET: Messages
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> UsersMessages()
         {
-            var applicationDbContext = _context.Message.Include(m => m.Project).Include(m => m.ProjectPosition).Include(m => m.Reciever).Include(m => m.Sender);
-            return View(await applicationDbContext.ToListAsync());
+            var user = await GetCurrentUserAsync();
+            var messages = await _context.Message
+                .Include(m => m.Reciever)
+                .Include(m => m.Sender)
+                .Where(q => q.RecieverId == user.Id).ToListAsync();
+
+            return View(messages);
         }
 
         // GET: Messages/Details/5
@@ -46,12 +51,18 @@ namespace IndiePal.Controllers
                 .Include(m => m.Reciever)
                 .Include(m => m.Sender)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (message == null)
             {
                 return NotFound();
             }
 
             return View(message);
+        }
+
+        public IActionResult ConfirmedJobSend()
+        {
+            return View();
         }
 
         // GET: Messages/Create
@@ -85,22 +96,34 @@ namespace IndiePal.Controllers
                 .Where(q => q.TalentId == null)
                 .ToListAsync();
 
+            //Filtering
+
+            List<Project> filteredProjects = new List<Project>();           
+
+
             foreach (Project project in projects)
             {
                 var filteredItems = new List<ProjectPosition>();
 
+                bool projectAvailable = false;
+
                 foreach (ProjectPosition projectPosition in projectPositions)
                 {
-                    if (projectPosition.ProjectId == project.Id)
+                    if (projectPosition.ProjectId == project.Id && projectPosition.TalentId == null)
                     {
+                        projectAvailable = true;
                         filteredItems.Add(projectPosition);
                     }
                 }
 
-                newMessage.SeperatePositions.Add(project.Id.ToString(), filteredItems);
+                if (projectAvailable)
+                {
+                    filteredProjects.Add(project);
+                    newMessage.SeperatePositions.Add(project.Id.ToString(), filteredItems);
+                }
             };
 
-            newMessage.SelectProjects = projects.Select(q => new SelectListItem()
+            newMessage.SelectProjects = filteredProjects.Select(q => new SelectListItem()
             {
                 Text = q.Title,
                 Value = q.Id.ToString()
@@ -114,19 +137,28 @@ namespace IndiePal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendHireMessage([Bind("Id,Header,Body,SenderId,RecieverId,ProjectId,ProjectPositionId")] Message message)
+        public async Task<IActionResult> SendHireMessage([Bind("Header,Body,SenderId,RecieverId,ProjectId,ProjectPositionId")] ListOfPositionsAndProjects listOf)
         {
+            ModelState.Remove("Id");
             if (ModelState.IsValid)
             {
+                Message message = new Message()
+                {
+                    Id = 0,
+                    Header = listOf.Header,
+                    Body = listOf.Body,
+                    SenderId = listOf.SenderId,
+                    RecieverId = listOf.RecieverId,
+                    ProjectId = listOf.ProjectId,
+                    ProjectPositionId = listOf.ProjectPositionId
+                };
+
                 _context.Add(message);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ConfirmedJobSend));
             }
-            ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Description", message.ProjectId);
-            ViewData["ProjectPositionId"] = new SelectList(_context.ProjectPosition, "Id", "Postion", message.ProjectPositionId);
-            ViewData["RecieverId"] = new SelectList(_context.ApplicationUser, "Id", "Id", message.RecieverId);
-            ViewData["SenderId"] = new SelectList(_context.ApplicationUser, "Id", "Id", message.SenderId);
-            return View(message);
+
+            return View(listOf);
         }
 
         // GET: Messages/Edit/5
