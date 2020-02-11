@@ -1,0 +1,41 @@
+﻿@model IEnumerable<IndiePal.Models.Message>
+
+@{
+    ViewData["Title"] = "UsersMessages";
+}
+
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Messages
+            </h1>
+            <h2 class="subtitle">
+                You got mail! ...Or not.
+            </h2>
+        </div>
+    </div>
+</section>
+<br>
+
+<div class="table-container">
+    <table class="table is-striped">
+        <thead>
+            <tr>
+                <th>Sender</th>
+                <th>Header</th>
+                <th $table-head-cell-border-width ="5px 0 0"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Message message in Model) 
+            { 
+                <tr>
+                    <td>@message.Sender.UserName</td>
+                    <td>@message.Header</td>
+                    <td><a class="button is-link" asp-action="Details" asp-route-id="@message.Id">Read</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

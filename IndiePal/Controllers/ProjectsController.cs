@@ -31,7 +31,6 @@ namespace IndiePal.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-
             var projectsList = await _context.Project
                 .Include(d => d.CurrentPositions)
                 .Include(d => d.Director)
@@ -58,15 +57,27 @@ namespace IndiePal.Controllers
                 Director = director
             };
 
-            if (viewingyours == false)
+            if (viewingyours == true)
             {
-                projectAndDirector.AllProjects = projectsList.Skip((index - 1) * 5).Take(5).ToList();
-            }
-            else
-            {
-                projectAndDirector.AllProjects = director.Projects.Skip((index - 1) * 5).Take(5).ToList();
+                projectAndDirector.AllProjects = director.Projects;
             }
 
+            else
+            {
+                projectAndDirector.AllProjects = projectsList;
+            }
+
+            int openCount = 0;
+
+            foreach(Project project in director.Projects)
+            {
+                if (project.Active)
+                {
+                    openCount++;
+                }
+            }
+
+            ViewBag.count = openCount;
             ViewBag.index = index;
             ViewBag.viewingyours = viewingyours;
             ViewBag.positionsavailable = false;
@@ -319,13 +330,60 @@ namespace IndiePal.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignTalent(int PositionId, int MessageId) 
+        {
+            try
+            {
+                var user = await GetCurrentUserAsync();
+
+                var position = await _context.ProjectPosition
+                    .FirstOrDefaultAsync(q => q.Id == PositionId);
+
+                if(position == null || position.TalentId != null)
+                {
+                    return BadRequest();
+                }
+
+                var talent = await _context.Talent
+                    .FirstOrDefaultAsync(q => q.ApplicationUserId == user.Id);
+
+                var message = await _context.Message
+                    .FirstOrDefaultAsync(q => q.Id == MessageId);
+
+                position.TalentId = talent.Id;
+
+                _context.Message.Remove(message);
+                _context.ProjectPosition.Update(position);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Details), new ProjectDetail() {id = position.ProjectId});
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PositionExists(PositionId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        //Helper methods
 
         private bool ProjectExists(int id)
         {
             return _context.Project.Any(e => e.Id == id);
         }
 
-        //Helper methods
+        private bool PositionExists(int id)
+        {
+            return _context.ProjectPosition.Any(e => e.Id == id);
+        }
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 

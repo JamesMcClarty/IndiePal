@@ -4,18 +4,17 @@
     ViewData["Title"] = "Details";
 }
 
-    <section class="hero is-primary">
-        <div class="hero-body">
-            <div class="container">
-                <h1 class="title">
-                    @Model.ApplicationUser.UserName's Talent Detail
-                </h1>
-                <h2 class="subtitle">
-                    Interested in hiring?
-                </h2>
-            </div>
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                @Model.ApplicationUser.UserName's Talent Detail
+            </h1>
+            <h2 class="subtitle"> 
+            </h2>
         </div>
-    </section>
+    </div>
+</section>
 
 <div class="box">
     <article class="media">
@@ -39,14 +38,22 @@
             </div>
             <nav class="level is-mobile">
                 <div class="level-left">
-                    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-                    @if (Model.Active == true)
+                    @if (ViewBag.IsUserDirector && ViewBag.ArePositionsAvailable)
                     {
-                        <a asp-action="Close" asp-route-id="@Model.Id">Close Talent</a>
+                        <a class="button is-link" asp-controller="Messages" asp-action="SendHireMessage" asp-route-id="@Model.Id">Send Hire Invite</a>
                     }
-                    else
+
+                    @if (ViewBag.IsUserCurrentTalent)
                     {
-                        <a asp-action="Open" asp-route-id="@Model.Id">Reopen Talent</a>
+                        <a class="button is-link" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                        @if (Model.Active == true)
+                        {
+                            <a class="button is-warning" asp-action="Close" asp-route-id="@Model.Id">Close Talent</a>
+                        }
+                        else
+                        {
+                            <a class="button is-primary" asp-action="Open" asp-route-id="@Model.Id">Reopen Talent</a>
+                        }
                     }
                 </div>
             </nav>

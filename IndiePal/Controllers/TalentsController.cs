@@ -26,22 +26,28 @@ namespace IndiePal.Controllers
         }
 
         // GET: Talents
-        public async Task<IActionResult> AllTalents()
+        public async Task<IActionResult> AllTalents(int index)
         {
             var user = await GetCurrentUserAsync();
-
-            var talentList = await _context.Talent.ToListAsync();
 
             var talent = await _context.Talent
                 .Include(t => t.ApplicationUser)
                 .Include(t => t.Skills)
                 .FirstOrDefaultAsync(t => t.ApplicationUserId == user.Id);
 
+            var talentList = await _context.Talent
+                .Include(q => q.ApplicationUser)
+                .Include(q => q.Skills)
+                .Where(q => q.ApplicationUserId != user.Id && q.Active == true)
+                .ToListAsync();
+
             var TalentListAndTalent = new TalentListAndTalentViewModel()
             {
-                AllTalents = talentList,
+                AllTalents = talentList.Skip((index - 1) * 5).Take(5).ToList(),
                 Talent = talent
             };
+
+            ViewBag.index = index;
 
             return View(TalentListAndTalent);
         }
@@ -54,6 +60,13 @@ namespace IndiePal.Controllers
                 return NotFound();
             }
 
+            var user = await GetCurrentUserAsync();
+
+            var director = await _context.Director
+                .Include(p => p.Projects)
+                    .ThenInclude(p => p.CurrentPositions)
+                .FirstOrDefaultAsync(q => q.ApplicationUserId == user.Id);
+
             var talent = await _context.Talent
                 .Include(t => t.ApplicationUser)
                 .Include(t => t.Skills)
@@ -64,6 +77,24 @@ namespace IndiePal.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.IsUserCurrentTalent = talent.ApplicationUserId == user.Id;
+            ViewBag.IsUserDirector = director != null && talent.ApplicationUserId != user.Id;
+
+            bool positionsAvailable = false;
+
+            foreach(Project project in director.Projects)
+            {
+                foreach(ProjectPosition projectPosition in project.CurrentPositions)
+                {
+                    if(projectPosition.TalentId == null)
+                    {
+                        positionsAvailable = true;
+                    }
+                }
+            }
+
+            ViewBag.ArePositionsAvailable = positionsAvailable;
 
             return View(talent);
         }
@@ -99,7 +130,10 @@ namespace IndiePal.Controllers
                 _context.Add(talent);
                 await _context.SaveChangesAsync();
 
-                bool skillsProcessed = await AddSkills(model.SkillList, user.Id);
+                if (model.SkillList != null)
+                {
+                    bool skillsProcessed = await AddSkills(model.SkillList, user.Id);
+                }
 
                 return RedirectToAction(nameof(AllTalents));
             }
@@ -173,7 +207,10 @@ namespace IndiePal.Controllers
                         await _context.SaveChangesAsync();
                     }
 
-                    var skillsMade = await AddSkills(editedTalent.SkillList, user.Id);
+                    if (editedTalent.SkillList != null)
+                    {
+                        var skillsMade = await AddSkills(editedTalent.SkillList, user.Id);
+                    }
 
                     var talent = new Talent()
                     {
