@@ -111,6 +111,8 @@ namespace IndiePal.Controllers
         {
             var project = await _context.Project
                 .Include(d => d.CurrentPositions)
+                     .ThenInclude(d => d.Talent)
+                     .ThenInclude(d => d.ApplicationUser)
                 .Include(d => d.ProjectLogs)
                 .Include(d=> d.Director)
                 .ThenInclude(d => d.ApplicationUser)
@@ -235,7 +237,10 @@ namespace IndiePal.Controllers
 
             foreach(ProjectPosition position in project.CurrentPositions)
             {
-                editingProject.Positions.Add(position.Postion);
+                if (position.TalentId == null)
+                {
+                    editingProject.Positions.Add(position.Postion);
+                }
             }
 
             ViewBag.currentPositions = project.CurrentPositions.ToList();
@@ -363,6 +368,42 @@ namespace IndiePal.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!PositionExists(PositionId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DismissTalent(int id, int projectid)
+        {
+            try
+            {
+                var user = await GetCurrentUserAsync();
+
+                var position = await _context.ProjectPosition
+                    .FirstOrDefaultAsync(q => q.Id == id);
+
+                if (position == null || position.TalentId == null)
+                {
+                    return BadRequest();
+                }
+
+                position.TalentId = null;
+
+                _context.ProjectPosition.Update(position);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Details), new ProjectDetail() { id = position.ProjectId });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PositionExists(id))
                 {
                     return NotFound();
                 }
