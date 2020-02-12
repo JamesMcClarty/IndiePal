@@ -16,14 +16,20 @@
     </div>
 </section>
 
+<br />
+
 @if (Model.Director == null)
 {
-    <a asp-action="DirectorAgreement">Create New Director Account</a>
+    <div style="margin-bottom:22px;">
+        <a class="button is-link" asp-action="DirectorAgreement">Create New Director Account</a>
+    </div>
 }
 
 else if (ViewBag.count < 2)
 {
+    <div style="margin-bottom:22px;">
     <a class="button is-link" asp-action="CreateProject">Create a new project!</a>
+        </div>
 }
 
 <article class="media">
@@ -33,9 +39,10 @@ else if (ViewBag.count < 2)
         </figure>
         @if (Model.Director != null)
         {
-        <figure class="media-left">
-            <a class="button is-link" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="true">Your Projects</a>
-        </figure>
+            <br>
+            <figure class="media-left">
+                <a class="button is-link" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="true">Your Projects</a>
+            </figure>
         }
     </div>
     <div class="media-content">
@@ -71,7 +78,7 @@ else if (ViewBag.count < 2)
 
                                 @if (project.EndDate != null)
                                 {
-                                  <p>Ended at: @project.EndDate</p>
+                                    <p>Ended at: @project.EndDate</p>
                                 }
 
                                 else
@@ -108,38 +115,38 @@ else if (ViewBag.count < 2)
                     </div>
                 }
 
-            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                @if (ViewBag.index != 1)
-                {
-                    <a class="pagination-previous" asp-action="AllProjects" asp-route-index="@(ViewBag.index-1)" asp-route-viewingyours="@ViewBag.viewingyours">Previous</a>
-                }
-                @if (ViewBag.index != Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)))
-                {
-                    <a class="pagination-next" asp-action="AllProjects" asp-route-index="@(ViewBag.index + 1)" asp-route-viewingyours="@ViewBag.viewingyours">>Next page</a>
-                }
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    @if (ViewBag.index != 1)
+                    {
+                        <a class="pagination-previous" asp-action="AllProjects" asp-route-index="@(ViewBag.index-1)" asp-route-viewingyours="@ViewBag.viewingyours">Previous</a>
+                    }
+                    @if (ViewBag.index != Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)+1))
+                    {
+                        <a class="pagination-next" asp-action="AllProjects" asp-route-index="@(ViewBag.index + 1)" asp-route-viewingyours="@ViewBag.viewingyours">>Next page</a>
+                    }
 
-                <div class="pagination-list">
-                    @if (ViewBag.index > 3)
-                    {
-                        <a class="pagination-link" aria-label="Goto page 1" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="@ViewBag.viewingyours">1</a>
-                        <span class="pagination-ellipsis">&hellip;</span>
-                    }
-                    @if (ViewBag.index - 1 > 0)
-                    {
-                        <a class="pagination-link" aria-label="Goto page @(ViewBag.Index - 1)" asp-action="AllProjects" asp-route-index="@(ViewBag.index - 1)" asp-route-viewingyours="@ViewBag.viewingyours"> @(ViewBag.Index - 1)</a>
-                    }
-                    <a class="pagination-link is-current" aria-label="Page @ViewBag.index" aria-current="page" asp-action="AllProjects" asp-route-index="@(ViewBag.index)" asp-route-viewingyours="@ViewBag.viewingyours">@ViewBag.index</a>
-                    @if (ViewBag.index + 1 <= Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)))
-                    {
-                        <a class="pagination-link" aria-label="Goto page @(ViewBag.index + 1)" asp-action="AllProjects" asp-route-index="@(ViewBag.index + 1)" asp-route-viewingyours="@ViewBag.viewingyours"> @(ViewBag.index + 1)</a>
-                    }
-                    @if (ViewBag.index < Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)) - 3)
-                    {
-                        <span class="pagination-ellipsis">&hellip;</span>
-                        <a class="pagination-link" aria-label="Goto page @Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))" asp-action="AllProjects" asp-route-index="@Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))" asp-route-viewingyours="@ViewBag.viewingyours"> @Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))</a>
-                    }
-                </div>
-            </nav>
+                    <div class="pagination-list">
+                        @if (ViewBag.index > 3)
+                        {
+                            <a class="pagination-link" aria-label="Goto page 1" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="@ViewBag.viewingyours">1</a>
+                            <span class="pagination-ellipsis">&hellip;</span>
+                        }
+                        @if (ViewBag.index - 1 > 0)
+                        {
+                            <a class="pagination-link" aria-label="Goto page @(ViewBag.Index - 1)" asp-action="AllProjects" asp-route-index="@(ViewBag.index - 1)" asp-route-viewingyours="@ViewBag.viewingyours"> @(ViewBag.Index - 1)</a>
+                        }
+                        <a class="pagination-link is-current" aria-label="Page @ViewBag.index" aria-current="page" asp-action="AllProjects" asp-route-index="@(ViewBag.index)" asp-route-viewingyours="@ViewBag.viewingyours">@ViewBag.index</a>
+                        @if (ViewBag.index + 1 <= Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)))
+                        {
+                            <a class="pagination-link" aria-label="Goto page @(ViewBag.index + 1)" asp-action="AllProjects" asp-route-index="@(ViewBag.index + 1)" asp-route-viewingyours="@ViewBag.viewingyours"> @(ViewBag.index + 1)</a>
+                        }
+                        @if (ViewBag.index < Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5)) - 3)
+                        {
+                            <span class="pagination-ellipsis">&hellip;</span>
+                            <a class="pagination-link" aria-label="Goto page @Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))" asp-action="AllProjects" asp-route-index="@Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))" asp-route-viewingyours="@ViewBag.viewingyours"> @Math.Floor(Convert.ToDouble(Model.AllProjects.Count / 5))</a>
+                        }
+                    </div>
+                </nav>
             </div>
         </div>
     </div>

@@ -79,8 +79,15 @@ $(document).ready(function() {
 	$(add_button).click(function(e){ //on add input button click
 		e.preventDefault();
 		if(x < max_fields){ //max input box allowed
-            $(wrapper).append('<div class="form-group" ><input class="form-control" type="text" id="SkillList_' + x + '_" name="SkillList[' + x + ']" value=""><a href="#" class="remove_field">Remove</a><span class="text-danger field-validation-valid" data-valmsg-for="SkillList[' + x + ']" data-valmsg-replace="true"></span></div>'); //add input box
-            	x++; //text box increment
+            $(wrapper).append('<div class="form-group" ><input class="form-control skill-form" type="text" id="SkillList_' + x + '_" name="SkillList[' + x + ']" value=""><a href="#" class="remove_field">Remove</a><span class="text-danger field-validation-valid" data-valmsg-for="SkillList[' + x + ']" data-valmsg-replace="true"></span></div>'); //add input box
+            x++; //text box increment
+                            var positionList = document.getElementsByClassName("skill-form");
+        for (var i = 0; positionList.length; i++){
+            positionList[i].removeAttribute("id");
+            positionList[i].removeAttribute("name");
+            positionList[i].setAttribute("id", 'SkillList_' + i + '_');
+            positionList[i].setAttribute("name", 'SkillList[' + i + ']');
+        }
 		}
 	});
 

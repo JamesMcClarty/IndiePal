@@ -2,7 +2,45 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <p class="has-text-centered">
+                <img class="" src="~/Images/indiepallogo.png" />
+            </p>
+            <h2 class="subtitle has-text-centered">
+                Come together and create something wonderful!
+            </h2>
+        </div>
+    </div>
+</section>
+
+<br />
+
+<article class="media">
+    <div class="media-content">
+        <div class="content">
+            <h4>What is IndiePal?</h4>
+            <br />
+            <p>
+                IndiePal is a website dedicated to helping people group together to create and organize independant projects.
+                This can range from video games, movies, music, books, and more. Using IndiePal is simple. Register an account, then
+                choose if you want to create a director profile, a talent profile, or both. A director's role is to organize projects
+                and the talents that are hired to help. A talent's role is showcase their skills and preferred payment to obtain a role and
+                work on a project.
+            </p>
+            <br />
+            <p>
+                Interested? Click on a role that better suits you and get started! Go to the projects page to create a new director profile.
+                Go to the talents page if you wish to showcase your skills to the world!
+            </p>
+
+            <a class="button is-link" asp-area="" asp-controller="Projects" asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="false">Projects</a>
+
+            <a class="button is-link" asp-area="" asp-controller="Talents" asp-action="AllTalents" asp-route-index="1">Talents</a>
+        </div>
+    </div>
+</article>
+
+
+
