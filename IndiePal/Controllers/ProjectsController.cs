@@ -52,6 +52,8 @@ namespace IndiePal.Controllers
                 }
             }
 
+            var pageList = projectsList.Skip((index - 1) * 5).Take(5).ToList();
+
             var projectAndDirector = new ProjectListAndDirectorViewModel()
             {
                 Director = director
@@ -64,18 +66,22 @@ namespace IndiePal.Controllers
 
             else
             {
-                projectAndDirector.AllProjects = projectsList;
+                projectAndDirector.AllProjects = pageList;
             }
 
             int openCount = 0;
 
-            foreach(Project project in director.Projects)
+            if (director != null)
             {
-                if (project.Active)
+                foreach (Project project in director.Projects)
                 {
-                    openCount++;
+                    if (project.Active)
+                    {
+                        openCount++;
+                    }
                 }
             }
+
 
             ViewBag.count = openCount;
             ViewBag.index = index;
@@ -151,7 +157,7 @@ namespace IndiePal.Controllers
 
                 _context.Add(newDirector);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(AllProjects));
+                return RedirectToAction(nameof(AllProjects), new ProjectListRoute() { index = 1, viewingyours = false});
             }
 
             var user = await GetCurrentUserAsync();
@@ -210,7 +216,7 @@ namespace IndiePal.Controllers
                     var positionsAdded = await AddPositions(model.Positions, project.StartDate, director.Id);
                 }
 
-                return RedirectToAction(nameof(AllProjects));
+                return RedirectToAction(nameof(AllProjects), new ProjectListRoute() { index = 1, viewingyours = false });
             }
 
             return View();

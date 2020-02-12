@@ -47,7 +47,11 @@
                                 <div class="content">
                                     <p>Log created: @log.DateMade</p>
 
-                                    <p>@log.Log</p>
+                                    <div class="field">
+                                        <div class="control">
+                                            <textarea class="textarea is-primary has-fixed-size" placeholder="Primary textarea" readonly>@log.Log</textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex-lg-wrap">
@@ -64,26 +68,24 @@
                             <div class="modal-background"></div>
                             <div class="modal-content">
                                 <div class="box">
-                                    <article class="media">
-                                        <div class="media-content">
-                                            <div class="content">
-                                                <p class="is-warning">
-                                                    <strong>Are you sure? Once you delete the log, it's gone for good.</strong>
-                                                </p>
-                                            </div>
-
-                                            <form asp-controller="ProjectLogs" asp-action="Delete" asp-route-id="@log.Id">
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <p class="is-warning">
+                                                <strong>Are you sure? Once you delete the log, it's gone for good.</strong>
+                                            </p>
+                                        </div>
+                                        <div style="display:flex; flex-direction:row">
+                                            <form style="margin-right:28px" asp-controller="ProjectLogs" asp-action="Delete" asp-route-id="@log.Id">
                                                 <button type="submit" class="button is-danger">Yes</button>
                                             </form>
 
                                             <span><button class="button is-light closeDeleteLog" data-target="#deleteModal-@log.Id">No</button></span>
                                         </div>
-                                    </article>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     }
-
                 </div>
 
                 @if (ViewBag.currentDirector == Model.Director.Id)
@@ -102,7 +104,7 @@
                         }
                     }
                 </div>
-
+                <br />
                 <h4>Filled Positions:</h4>
                 <div>
                     @foreach (ProjectPosition position in Model.CurrentPositions)
@@ -121,21 +123,21 @@
                                 <div class="modal-background"></div>
                                 <div class="modal-content">
                                     <div class="box">
-                                        <article class="media">
-                                            <div class="media-content">
-                                                <div class="content">
-                                                    <p class="is-warning">
-                                                        <strong>Are you sure? Once you accept, @position.Talent.ApplicationUser.UserName will be dismissed.</strong>
-                                                    </p>
-                                                </div>
+                                        <div class="media-content">
+                                            <div class="content">
+                                                <p class="is-warning">
+                                                    <strong>Are you sure? Once you accept, @position.Talent.ApplicationUser.UserName will be dismissed.</strong>
+                                                </p>
+                                            </div>
 
-                                                <form asp-controller="Projects" asp-action="DismissTalent" asp-route-id="@position.Id" asp-route-projectid="@Model.Id">
+                                            <div style="display:flex; flex-direction:row">
+                                                <form style="margin-right:28px" asp-controller="Projects" asp-action="DismissTalent" asp-route-id="@position.Id" asp-route-projectid="@Model.Id">
                                                     <button type="submit" class="button is-danger">Yes</button>
                                                 </form>
 
-                                                <span><button class="button is-light closeDismissal" data-target="#dismiss-@position.TalentId">No</button></span>
+                                                <button class="button is-light closeDismissal" data-target="#dismiss-@position.TalentId">No</button>
                                             </div>
-                                        </article>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -147,12 +149,14 @@
     </article>
 </div>
 
-
+<div>
+    <a asp-action="AllProjects" asp-route-index="1" asp-route-viewingyours="false">Back to List</a>
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <script>
-       $(".openDeleteLog").click(function () {
+    $(".openDeleteLog").click(function () {
         var target = $(this).data("target");
         $("html").addClass("is-clipped");
         $(target).addClass("is-active");
