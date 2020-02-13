@@ -100,12 +100,14 @@ else
                                     Do you wish to close your talent account? You can reopen it to be listed later.
                                 </p>
                             </div>
-                            <form asp-action="Close" asp-route-id="@Model.Talent.Id">
-                                <button class="button is-primary">Accept</button>
-                            </form>
-                            <button class="button is-warning" id="closeCloseModal">Close</button>
-                        </div>
-                    </article>
+                            <div style="display:flex; flex-direction:row">
+                                <form asp-action="Close" asp-route-id="@Model.Talent.Id">
+                                    <button style="margin-right:28px" class="button is-primary">Accept</button>
+                                </form>
+                                <button class="button is-warning" id="closeCloseModal">Close</button>
+                            </div>
+                            </div>
+</article>
                 </div>
             </div>
         </div>
@@ -122,12 +124,14 @@ else
                                     <br>
                                     Open your account? It will be put back on the list.
                                 </p>
+                                <div style="display:flex; flex-direction:row">
+                                    <form asp-action="Reopen" asp-route-id="@Model.Talent.Id">
+                                        <button style="margin-right:28px" class="button is-primary">Accept</button>
+                                    </form>
+                                    <button class="button is-warning" id="closeOpenModal">Close</button>
+                                    </div>
+                                </div>
                             </div>
-                            <form asp-action="Reopen" asp-route-id="@Model.Talent.Id">
-                                <button class="button is-primary">Accept</button>
-                            </form>
-                            <button class="button is-warning" id="closeOpenModal">Close</button>
-                        </div>
                     </article>
                 </div>
             </div>
@@ -248,6 +252,6 @@ else
 
     $("#closeOpenModal").click(function () {
         $("html").removeClass("is-clipped");
-        $("#closemodal").removeClass("is-active");
+        $("#openmodal").removeClass("is-active");
     });
 </script>
