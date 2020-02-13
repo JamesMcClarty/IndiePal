@@ -1,9 +1,9 @@
 ![IndiePal Logo](/IndiePal/wwwroot/Images/indiepallogo.png)
 
 
-## What is IndiePad?
+## What is IndiePal?
 
-IndiePad is a web application that aims to allow users to create, attend, and organize projects to create all types of products. The program is specialized for smaller production, or "independant", groups to arrange their tasks, workforce, and budget to meet their goals.
+IndiePal is a web application that aims to allow users to create, attend, and organize projects to create all types of products. The program is specialized for smaller production, or "independant", groups to arrange their tasks, workforce, and budget to meet their goals.
 
 The users are split into two different accounts: Directors and Talents. Directors are able to do the following:
 
